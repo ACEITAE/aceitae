@@ -75,31 +75,23 @@ def cadastrar(usuario: UsuarioCadastro):
 # ==================================================
 # ROTA DE LOGIN
 # ==================================================
-
-# ==================================================
-# ROTA DE LOGIN (CORRIGIDA)
-# ==================================================
-
 @app.post("/login")
 def login(usuario: LoginData):
-    try:
-        result = supabase.table("usuarios").select("*").eq("email", usuario.email).eq("senha", usuario.senha).execute()
-        
-        if not result.data:
-            raise HTTPException(status_code=401, detail="E-mail ou senha incorretos")
-        
-        user = result.data[0]
-        
-        return {
-            "mensagem": f"Bem-vindo, {user['nome']}!",
-            "usuario_id": user["id"],
-            "nome": user["nome"],
-            "email": user["email"],
-            "tipo": user["tipo"]
-        }
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
+    result = supabase.table("usuarios").select("*").eq("email", usuario.email).eq("senha", usuario.senha).execute()
+    
+    if not result.data:
+        raise HTTPException(status_code=401, detail="E-mail ou senha incorretos")
+    
+    user = result.data[0]
+    
+    # RETORNAR TODOS OS DADOS
+    return {
+        "mensagem": f"Bem-vindo, {user['nome']}!",
+        "usuario_id": user["id"],
+        "nome": user["nome"],
+        "email": user["email"],
+        "tipo": user["tipo"]
+    }
 # ==================================================
 # ROTA PARA CRIAR PRODUTO
 # ==================================================
