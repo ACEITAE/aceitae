@@ -75,7 +75,6 @@ def cadastrar(usuario: UsuarioCadastro):
 # ==================================================
 # ROTA DE LOGIN
 # ==================================================
-
 @app.post("/login")
 def login(usuario: LoginData):
     result = supabase.table("usuarios").select("*").eq("email", usuario.email).eq("senha", usuario.senha).execute()
@@ -85,11 +84,10 @@ def login(usuario: LoginData):
     
     user = result.data[0]
     
-    # RETORNAR TODOS OS DADOS
     return {
         "mensagem": f"Bem-vindo, {user['nome']}!",
         "usuario_id": user["id"],
-        "nome": user["nome"],
+        "nome": user["nome"],        # ← CAMPO OBRIGATÓRIO
         "email": user["email"],
         "tipo": user["tipo"]
     }
