@@ -85,7 +85,7 @@ def login(usuario: LoginData):
     user = result.data[0]
     
     return {
-        "mensagem": f"Bem-vindo, {user["nome"]}!",
+        "mensagem": f"Bem-vindo, {user['nome']}!",
         "usuario_id": user["id"],
         "nome": user["nome"],        # ← CAMPO OBRIGATÓRIO
         "email": user["email"],
