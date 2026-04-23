@@ -75,6 +75,7 @@ def cadastrar(usuario: UsuarioCadastro):
 # ==================================================
 # ROTA DE LOGIN
 # ==================================================
+
 @app.post("/login")
 def login(usuario: LoginData):
     result = supabase.table("usuarios").select("*").eq("email", usuario.email).eq("senha", usuario.senha).execute()
