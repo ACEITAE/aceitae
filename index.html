@@ -686,7 +686,7 @@
                                         <i class="fas fa-store"></i> Meu Painel
                                      </a>`;
                     }
-                    
+                    let nomeSalvo = localStorage.getItem('usuario_nome') || 'Visitante';
                     userDiv.innerHTML = `
                         ${painelLink}
                         <span class="user-name"><i class="fas fa-user-circle"></i> Olá, ${nomeSalvo}</span>
