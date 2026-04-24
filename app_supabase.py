@@ -87,9 +87,10 @@ def login(usuario: LoginData):
     return {
     "mensagem": f"Bem-vindo, {user['nome']}!",
     "usuario_id": user["id"],
-    "nome": user["nome"],        # ← CAMPO OBRIGATÓRIO
+    "nome": user["nome"],        # ← ESTA LINHA É A CORREÇÃO!
     "email": user["email"],
     "tipo": user["tipo"]
+}
 }
 # ==================================================
 # ROTA PARA CRIAR PRODUTO
