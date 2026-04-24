@@ -91,7 +91,6 @@ def login(usuario: LoginData):
     "email": user["email"],
     "tipo": user["tipo"]
 }
-}
 # ==================================================
 # ROTA PARA CRIAR PRODUTO
 # ==================================================
