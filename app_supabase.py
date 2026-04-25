@@ -248,6 +248,11 @@ def responder_oferta(oferta_id: int, acao: str):
 @app.get("/vendedor/{vendedor_id}/ofertas")
 def ver_ofertas_do_vendedor(vendedor_id: int):
     try:
+        # Verificar se o usuário é vendedor ou ambos
+        usuario = supabase.table("usuarios").select("*").eq("id", vendedor_id).in_("tipo", ["vendedor", "ambos"]).execute()
+        if not usuario.data:
+            return {"ofertas": [], "total": 0, "mensagem": "Usuário não é vendedor"}
+        
         produtos = supabase.table("produtos").select("*").eq("vendedor_id", vendedor_id).execute()
         
         if not produtos.data:
@@ -275,7 +280,8 @@ def ver_ofertas_do_vendedor(vendedor_id: int):
         
         return {"ofertas": resultado, "total": len(resultado)}
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e))        
+        
 
 # ==================================================
 # ROTA PARA LISTAR USUÁRIOS
