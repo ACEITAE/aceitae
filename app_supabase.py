@@ -1,9 +1,10 @@
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI, HTTPException, status, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
 from supabase_config import supabase
+import uuid
 
 app = FastAPI(
     title="ACEITAÊ API",
@@ -85,12 +86,38 @@ def login(usuario: LoginData):
     user = result.data[0]
     
     return {
-    "mensagem": f"Bem-vindo, {user['nome']}!",
-    "usuario_id": user["id"],
-    "nome": user["nome"],        # ← ESTA LINHA É A CORREÇÃO!
-    "email": user["email"],
-    "tipo": user["tipo"]
-}
+        "mensagem": f"Bem-vindo, {user['nome']}!",
+        "usuario_id": user["id"],
+        "nome": user["nome"],
+        "email": user["email"],
+        "tipo": user["tipo"]
+    }
+
+# ==================================================
+# ROTA PARA UPLOAD DE FOTOS
+# ==================================================
+
+@app.post("/upload-foto")
+async def upload_foto(arquivo: UploadFile = File(...)):
+    try:
+        # Gerar nome único para o arquivo
+        extensao = arquivo.filename.split(".")[-1]
+        nome_arquivo = f"{uuid.uuid4()}.{extensao}"
+        
+        # Fazer upload para o Supabase Storage
+        supabase.storage.from_("produtos").upload(
+            nome_arquivo, 
+            await arquivo.read(),
+            file_options={"content-type": arquivo.content_type}
+        )
+        
+        # Obter URL pública
+        url = supabase.storage.from_("produtos").get_public_url(nome_arquivo)
+        
+        return {"url": url, "mensagem": "Upload realizado com sucesso!"}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
 # ==================================================
 # ROTA PARA CRIAR PRODUTO
 # ==================================================
@@ -251,7 +278,6 @@ def responder_oferta(oferta_id: int, acao: str):
 @app.get("/vendedor/{vendedor_id}/ofertas")
 def ver_ofertas_do_vendedor(vendedor_id: int):
     try:
-        # Verificar se o usuário é vendedor ou ambos
         usuario = supabase.table("usuarios").select("*").eq("id", vendedor_id).in_("tipo", ["vendedor", "ambos"]).execute()
         if not usuario.data:
             return {"ofertas": [], "total": 0, "mensagem": "Usuário não é vendedor"}
@@ -283,8 +309,7 @@ def ver_ofertas_do_vendedor(vendedor_id: int):
         
         return {"ofertas": resultado, "total": len(resultado)}
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))        
-        
+        raise HTTPException(status_code=400, detail=str(e))
 
 # ==================================================
 # ROTA PARA LISTAR USUÁRIOS
