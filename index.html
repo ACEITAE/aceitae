@@ -709,19 +709,22 @@
         }
 
         async function carregarProdutos() {
-            try {
-                const response = await fetch(`${API_URL}/produtos?status=aprovado`);
-                const data = await response.json();
-                
-                if (!data.produtos || data.produtos.length === 0) {
-                    document.getElementById('produtos').innerHTML = `
-                        <div style="text-align: center; padding: 60px;">
-                            <i class="fas fa-gavel" style="font-size: 48px; color: #00C853;"></i>
-                            <p style="margin-top: 20px;">Nenhum produto disponivel no momento.</p>
-                            <p style="font-size: 14px; color: #999;">Faca uma oferta em breve!</p>
-                        </div>
-                    `;
-                    document.getElementById('total-produtos').textContent = '0';
+    try {
+        const response = await fetch(`${API_URL}/produtos?status=aprovado`);
+        const data = await response.json();
+        
+        if (!data.produtos || data.produtos.length === 0) {
+            document.getElementById('produtos').innerHTML = `<div>Nenhum produto disponível</div>`;
+            return;
+        }
+
+        // Renderizar produtos
+        renderizarProdutos(data.produtos);
+    } catch (error) {
+        console.error('Erro:', error);
+    }
+}                  
+                document.getElementById('total-produtos').textContent = '0';
                     return;
                 }
 
