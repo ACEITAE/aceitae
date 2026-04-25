@@ -141,18 +141,21 @@
         let tabAtual = 'pendentes';
 
         async function carregarProdutosVendedor() {
-            try {
-                const response = await fetch(`${API_URL}/produtos?vendedor_id=${VENDEDOR_ID}`);
-                const data = await response.json();
-                const totalProdutos = data.produtos ? data.produtos.length : 0;
-                document.getElementById('total-produtos').textContent = totalProdutos;
-                return data.produtos || [];
-            } catch (error) {
-                console.error('Erro ao carregar produtos:', error);
-                return [];
-            }
-        }
-
+    try {
+        const response = await fetch(`${API_URL}/produtos?vendedor_id=${VENDEDOR_ID}&status=aprovado`);
+        const data = await response.json();
+        const totalProdutos = data.produtos ? data.produtos.length : 0;
+        
+        console.log('Produtos encontrados para vendedor', VENDEDOR_ID, ':', totalProdutos);
+        console.log('Lista:', data.produtos);
+        
+        document.getElementById('total-produtos').textContent = totalProdutos;
+        return data.produtos || [];
+    } catch (error) {
+        console.error('Erro ao carregar produtos:', error);
+        return [];
+    }
+}
         async function carregarOfertas() {
             try {
                 await carregarProdutosVendedor();
