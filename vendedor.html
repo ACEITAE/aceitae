@@ -140,32 +140,25 @@
         let todasOfertas = [];
         let tabAtual = 'pendentes';
 
-        async function carregarProdutosVendedor() {
-    try {
-        const response = await fetch(`${API_URL}/produtos?vendedor_id=${VENDEDOR_ID}&status=aprovado`);
-        const data = await response.json();
-        const totalProdutos = data.produtos ? data.produtos.length : 0;
-        
-        console.log('Produtos encontrados para vendedor', VENDEDOR_ID, ':', totalProdutos);
-        console.log('Lista:', data.produtos);
-        
-        document.getElementById('total-produtos').textContent = totalProdutos;
-        return data.produtos || [];
-    } catch (error) {
-        console.error('Erro ao carregar produtos:', error);
-        return [];
-    }
-}
-        async function carregarOfertas() {
+        async function carregarDadosVendedor() {
             try {
-                await carregarProdutosVendedor();
+                // Buscar produtos APENAS deste vendedor
+                const responseProdutos = await fetch(`${API_URL}/produtos?vendedor_id=${VENDEDOR_ID}&status=aprovado`);
+                const dataProdutos = await responseProdutos.json();
+                const totalProdutos = dataProdutos.produtos ? dataProdutos.produtos.length : 0;
                 
-                const response = await fetch(`${API_URL}/vendedor/${VENDEDOR_ID}/ofertas`);
-                const data = await response.json();
+                console.log('Vendedor ID:', VENDEDOR_ID);
+                console.log('Total de produtos do vendedor:', totalProdutos);
+                console.log('Produtos:', dataProdutos.produtos);
                 
-                todasOfertas = data.ofertas || [];
+                document.getElementById('total-produtos').textContent = totalProdutos;
                 
-                const totalProdutos = document.getElementById('total-produtos').textContent;
+                // Buscar ofertas deste vendedor
+                const responseOfertas = await fetch(`${API_URL}/vendedor/${VENDEDOR_ID}/ofertas`);
+                const dataOfertas = await responseOfertas.json();
+                
+                todasOfertas = dataOfertas.ofertas || [];
+                
                 const ofertasPendentes = todasOfertas.filter(o => o.status === 'pendente').length;
                 
                 document.getElementById('total-ofertas').textContent = todasOfertas.length;
@@ -174,7 +167,7 @@
                 renderizarOfertas();
             } catch (error) {
                 console.error('Erro:', error);
-                document.getElementById('ofertas-container').innerHTML = `<div class="sem-ofertas"><i class="fas fa-exclamation-triangle"></i><p>Erro ao carregar ofertas.</p></div>`;
+                document.getElementById('ofertas-container').innerHTML = `<div class="sem-ofertas"><i class="fas fa-exclamation-triangle"></i><p>Erro ao carregar dados.</p></div>`;
             }
         }
 
@@ -266,7 +259,7 @@
             try {
                 const response = await fetch(`${API_URL}/ofertas/${ofertaId}/responder?acao=${encodeURIComponent(acao)}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' } });
                 const data = await response.json();
-                if (response.ok) { alert(data.mensagem); carregarOfertas(); } 
+                if (response.ok) { alert(data.mensagem); carregarDadosVendedor(); } 
                 else { alert('Erro: ' + (data.detail || 'Não foi possível processar sua resposta')); }
             } catch (error) { alert('Erro de conexão: ' + error.message); }
         }
@@ -277,7 +270,7 @@
             renderizarOfertas();
         }
         
-        carregarOfertas();
+        carregarDadosVendedor();
     </script>
 </body>
 </html>
