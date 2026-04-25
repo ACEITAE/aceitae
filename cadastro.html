@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -476,4 +477,484 @@
         });
     </script>
 </body>
+=======
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACEITAÊ - Cadastro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #1A237E 0%, #283593 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 550px;
+            width: 100%;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            font-size: 32px;
+            color: #1A237E;
+        }
+
+        .logo h1 span {
+            color: #00C853;
+        }
+
+        .logo p {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .tipo-usuario {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 25px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .tipo-btn {
+            flex: 1;
+            min-width: 100px;
+            padding: 12px 8px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .tipo-btn i {
+            font-size: 20px;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .tipo-btn.active {
+            border-color: #00C853;
+            background: #e8f5e9;
+            color: #00C853;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #00C853;
+        }
+
+        input[readonly] {
+            background: #f5f5f5;
+            cursor: not-allowed;
+        }
+
+        .campo-vendedor {
+            display: none;
+        }
+
+        .campo-vendedor.visible {
+            display: block;
+        }
+
+        .btn-cadastrar {
+            width: 100%;
+            padding: 14px;
+            background: #00C853;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-cadastrar:hover {
+            background: #00A844;
+        }
+
+        .btn-buscar-cep {
+            padding: 12px 20px;
+            background: #1A237E;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+            white-space: nowrap;
+        }
+
+        .btn-buscar-cep:hover {
+            background: #283593;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+
+        .login-link a {
+            color: #1A237E;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .mensagem {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .mensagem.sucesso {
+            background: #e8f5e9;
+            color: #2e7d32;
+            display: block;
+        }
+
+        .mensagem.erro {
+            background: #ffebee;
+            color: #c62828;
+            display: block;
+        }
+
+        small {
+            font-size: 11px;
+            display: block;
+            margin-top: 5px;
+            color: #999;
+        }
+
+        .endereco-fields {
+            display: none;
+        }
+
+        .endereco-fields.visible {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="logo">
+                <h1>ACEIT<span>AÊ</span></h1>
+                <p>Crie sua conta</p>
+            </div>
+
+            <div class="tipo-usuario">
+                <div class="tipo-btn" data-tipo="comprador">
+                    <i class="fas fa-user"></i>
+                    Quero Comprar
+                </div>
+                <div class="tipo-btn" data-tipo="vendedor">
+                    <i class="fas fa-store"></i>
+                    Quero Vender
+                </div>
+                <div class="tipo-btn" data-tipo="ambos">
+                    <i class="fas fa-exchange-alt"></i>
+                    Comprar e Vender
+                </div>
+            </div>
+
+            <form id="cadastroForm">
+                <div class="form-group">
+                    <label>Nome completo</label>
+                    <input type="text" id="nome" required>
+                </div>
+
+                <div class="form-group">
+                    <label>E-mail</label>
+                    <input type="email" id="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Telefone (WhatsApp)</label>
+                    <input type="tel" id="telefone" placeholder="(11) 99999-9999" required>
+                </div>
+
+                <div class="form-group">
+                    <label>CPF ou CNPJ *</label>
+                    <input type="text" id="doc" placeholder="000.000.000-00 ou 00.000.000/0000-00">
+                    <small>Obrigatório para vendedores e usuários "Comprar e Vender"</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Senha</label>
+                    <input type="password" id="senha" required>
+                </div>
+
+                <!-- Campos específicos para vendedor -->
+                <div id="camposVendedor" class="campo-vendedor">
+                    <div class="form-group">
+                        <label>Chave PIX</label>
+                        <input type="text" id="pix" placeholder="E-mail, CPF ou telefone">
+                        <small>Para receber pagamentos das vendas</small>
+                    </div>
+                </div>
+
+                <!-- Endereço para todos -->
+                <div class="form-group">
+                    <label>CEP</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="cep" placeholder="00000-000" style="flex: 1;">
+                        <button type="button" id="buscarCep" class="btn-buscar-cep">
+                            <i class="fas fa-search"></i> Buscar
+                        </button>
+                    </div>
+                </div>
+
+                <div id="enderecoFields" class="endereco-fields">
+                    <div class="form-group">
+                        <label>Logradouro</label>
+                        <input type="text" id="logradouro" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Bairro</label>
+                        <input type="text" id="bairro" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Cidade</label>
+                        <input type="text" id="cidade" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Estado</label>
+                        <input type="text" id="estado" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Número *</label>
+                        <input type="text" id="numero" placeholder="Número da casa/apto">
+                    </div>
+                    <div class="form-group">
+                        <label>Complemento (opcional)</label>
+                        <input type="text" id="complemento" placeholder="Apto, bloco, etc.">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-cadastrar">
+                    <i class="fas fa-user-plus"></i> Cadastrar
+                </button>
+            </form>
+
+            <div class="login-link">
+                Já tem conta? <a href="login.html">Faça login</a>
+            </div>
+            <div id="mensagem" class="mensagem"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://aceitae-api.onrender.com';
+        
+        // Alternar entre tipos de usuario
+        document.querySelectorAll('.tipo-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.tipo-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                const tipo = this.getAttribute('data-tipo');
+                const camposVendedor = document.getElementById('camposVendedor');
+                const docLabel = document.querySelector('#doc');
+                
+                // Mostrar campos de vendedor se for vendedor ou ambos
+                if (tipo === 'vendedor' || tipo === 'ambos') {
+                    camposVendedor.classList.add('visible');
+                } else {
+                    camposVendedor.classList.remove('visible');
+                }
+            });
+        });
+
+        // Buscar endereco por CEP
+        const cepInput = document.getElementById('cep');
+        const buscarCepBtn = document.getElementById('buscarCep');
+        const enderecoFields = document.getElementById('enderecoFields');
+
+        async function buscarEndereco() {
+            let cep = cepInput.value.replace(/\D/g, '');
+            
+            if (cep.length !== 8) {
+                alert('Digite um CEP valido com 8 digitos');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+                const data = await response.json();
+                
+                if (data.erro) {
+                    alert('CEP nao encontrado!');
+                    return;
+                }
+                
+                document.getElementById('logradouro').value = data.logradouro || '';
+                document.getElementById('bairro').value = data.bairro || '';
+                document.getElementById('cidade').value = data.localidade || '';
+                document.getElementById('estado').value = data.uf || '';
+                
+                enderecoFields.classList.add('visible');
+                document.getElementById('numero').focus();
+                
+            } catch (error) {
+                alert('Erro ao buscar CEP. Tente novamente.');
+            }
+        }
+
+        buscarCepBtn.addEventListener('click', buscarEndereco);
+        cepInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                buscarEndereco();
+            }
+        });
+
+        // Cadastrar com login automatico
+        document.getElementById('cadastroForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const tipo = document.querySelector('.tipo-btn.active').getAttribute('data-tipo');
+            const nome = document.getElementById('nome').value;
+            const email = document.getElementById('email').value;
+            const telefone = document.getElementById('telefone').value;
+            const senha = document.getElementById('senha').value;
+            const doc = document.getElementById('doc').value;
+            
+            // Validar CPF/CNPJ para vendedor ou ambos
+            if ((tipo === 'vendedor' || tipo === 'ambos') && !doc) {
+                alert('CPF/CNPJ e obrigatorio para vendedores e usuarios "Comprar e Vender"!');
+                return;
+            }
+            
+            // Validar endereco
+            const logradouro = document.getElementById('logradouro').value;
+            const numero = document.getElementById('numero').value;
+            const bairro = document.getElementById('bairro').value;
+            const cidade = document.getElementById('cidade').value;
+            const estado = document.getElementById('estado').value;
+            
+            if (!logradouro || !numero || !bairro || !cidade || !estado) {
+                alert('Preencha o endereco completo (busque o CEP primeiro)!');
+                return;
+            }
+            
+            const complemento = document.getElementById('complemento').value;
+            const enderecoCompleto = `${logradouro}, ${numero}${complemento ? ', ' + complemento : ''} - ${bairro}, ${cidade} - ${estado}`;
+            
+            const dados = {
+                nome, email, telefone, senha, tipo,
+                cpf: doc || null,
+                endereco: enderecoCompleto
+            };
+            
+            if (tipo === 'vendedor' || tipo === 'ambos') {
+                dados.pix = document.getElementById('pix').value || null;
+            } else {
+                dados.pix = null;
+            }
+            
+            const msgDiv = document.getElementById('mensagem');
+            
+            try {
+                const response = await fetch(`${API_URL}/cadastrar`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dados)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    msgDiv.className = 'mensagem sucesso';
+                    msgDiv.innerHTML = `✅ ${data.mensagem}! Fazendo login...`;
+                    
+                    // Fazer login automaticamente
+                    const loginResponse = await fetch(`${API_URL}/login`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, senha })
+                    });
+                    
+                    const loginData = await loginResponse.json();
+                    
+                    if (loginResponse.ok) {
+                        localStorage.setItem('usuario_id', loginData.usuario_id);
+                        localStorage.setItem('usuario_nome', loginData.nome);
+                        localStorage.setItem('usuario_tipo', loginData.tipo);
+                        localStorage.setItem('usuario_email', email);
+                        
+                        msgDiv.innerHTML = `✅ Cadastro e login realizados! Redirecionando...`;
+                        
+                        setTimeout(() => {
+                            if (loginData.tipo === 'vendedor' || loginData.tipo === 'ambos') {
+                                window.location.href = 'vendedor.html';
+                            } else {
+                                window.location.href = 'index.html';
+                            }
+                        }, 1500);
+                    } else {
+                        setTimeout(() => window.location.href = 'login.html', 1500);
+                    }
+                } else {
+                    msgDiv.className = 'mensagem erro';
+                    msgDiv.innerHTML = `❌ ${data.detail || 'Erro ao cadastrar'}`;
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                msgDiv.className = 'mensagem erro';
+                msgDiv.innerHTML = `❌ Erro de conexao: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+>>>>>>> 2caedf4b6a2029415ccf17245d8a1dcf750d351b
 </html>
