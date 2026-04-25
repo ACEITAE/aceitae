@@ -124,7 +124,6 @@
             color: #00C853;
         }
 
-        /* Texto explicativo ao lado do logo */
         .logo-description {
             margin-left: 20px;
             padding-left: 20px;
@@ -148,7 +147,6 @@
             margin-top: 2px;
         }
 
-        /* Barra de busca */
         .search-box {
             flex: 1;
             max-width: 500px;
@@ -180,7 +178,6 @@
             background: #00A844;
         }
 
-        /* Botões de ação no header */
         .action-buttons {
             display: flex;
             gap: 16px;
@@ -222,14 +219,12 @@
             background: #00A844;
         }
 
-        /* Container principal */
         .container {
             max-width: 1280px;
             margin: 0 auto;
             padding: 24px;
         }
 
-        /* Filtros */
         .filters {
             background: white;
             border-radius: 12px;
@@ -269,7 +264,6 @@
             border-color: #00C853;
         }
 
-        /* Stats */
         .stats {
             display: flex;
             justify-content: space-between;
@@ -289,14 +283,12 @@
             color: #1A237E;
         }
 
-        /* Grid de produtos */
         .produtos-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
             gap: 20px;
         }
 
-        /* Card profissional */
         .produto-card {
             background: white;
             border-radius: 12px;
@@ -380,7 +372,6 @@
             overflow: hidden;
         }
 
-        /* Área de oferta */
         .oferta-area {
             border-top: 1px solid #f0f0f0;
             padding-top: 12px;
@@ -421,7 +412,6 @@
             background: #00A844;
         }
 
-        /* Mensagem */
         .mensagem {
             margin-top: 12px;
             padding: 8px 12px;
@@ -445,14 +435,12 @@
             color: #c62828;
         }
 
-        /* Loading */
         .loading {
             text-align: center;
             padding: 60px;
             color: #999;
         }
 
-        /* Footer */
         .footer {
             background: #1A237E;
             color: white;
@@ -534,7 +522,6 @@
     </style>
 </head>
 <body>
-    <!-- Top bar com links -->
     <div class="top-bar-links" id="topBar">
         <a href="vendedor.html"><i class="fas fa-store"></i> Central do Vendedor</a>
         <span class="separator">|</span>
@@ -558,7 +545,6 @@
         <a href="login.html" id="btnEntrar" class="btn-outline"><i class="fas fa-sign-in-alt"></i> Entrar</a>
     </div>
 
-    <!-- Header principal -->
     <div class="main-header">
         <div class="header-container">
             <div class="logo-area">
@@ -582,14 +568,13 @@
                 <a href="#"><i class="fas fa-shopping-cart"></i></a>
                 <a href="#" id="btn-ofertar" class="btn-outline"><i class="fas fa-gavel"></i> Ofertar</a>
                 <a href="anunciar.html" id="btn-anunciar" class="btn-primary">
-    <i class="fas fa-plus-circle"></i> Anunciar Grátis
+                    <i class="fas fa-plus-circle"></i> Anunciar Grátis
                 </a>
             </div>
         </div>
     </div>
 
     <div class="container">
-        <!-- Filtros -->
         <div class="filters">
             <div class="filter-group">
                 <button class="filter-btn active" data-categoria="todos" onclick="filtrarPorCategoria('todos')">Todos</button>
@@ -600,20 +585,17 @@
             </div>
         </div>
 
-        <!-- Stats -->
         <div class="stats">
             <div class="total-produtos">
                 <span id="total-produtos">0</span> produtos encontrados
             </div>
         </div>
 
-        <!-- Grid de produtos -->
         <div id="produtos" class="loading">
             Carregando produtos...
         </div>
     </div>
 
-    <!-- Footer -->
     <div class="footer">
         <div class="footer-content">
             <div class="footer-section">
@@ -641,15 +623,10 @@
     <script>
         const API_URL = 'https://aceitae-api.onrender.com';
         
-        // ==================================================
-        // VERIFICACAO DE TIPO DE USUARIO (CORRIGIDA)
-        // ==================================================
         const usuarioTipo = localStorage.getItem('usuario_tipo');
         const usuarioNome = localStorage.getItem('usuario_nome');
         const usuarioId = localStorage.getItem('usuario_id');
         
-        // APENAS vendedores (sem ambos) sao redirecionados para o painel
-        // Usuarios do tipo "ambos" ficam na loja (podem acessar o painel pelo link)
         if (usuarioTipo === 'vendedor') {
             window.location.href = 'vendedor.html';
         }
@@ -685,7 +662,15 @@
                         painelLink = `<a href="vendedor.html" style="color: white; text-decoration: none; margin-right: 10px; background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 20px;">
                                         <i class="fas fa-store"></i> Meu Painel
                                      </a>`;
+                    }
                     
+                    userDiv.innerHTML = `
+                        ${painelLink}
+                        <span class="user-name"><i class="fas fa-user-circle"></i> Olá, ${nomeSalvo}</span>
+                        <a class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Sair</a>
+                    `;
+                    topBar.appendChild(userDiv);
+                }
             }
         }
         
@@ -694,7 +679,6 @@
             window.location.href = 'login.html';
         }
         
-        // Botao Ofertar - rola ate os produtos
         const btnOfertar = document.getElementById('btn-ofertar');
         if (btnOfertar) {
             btnOfertar.addEventListener('click', function(e) {
@@ -709,22 +693,19 @@
         }
 
         async function carregarProdutos() {
-    try {
-        const response = await fetch(`${API_URL}/produtos?status=aprovado`);
-        const data = await response.json();
-        
-        if (!data.produtos || data.produtos.length === 0) {
-            document.getElementById('produtos').innerHTML = `<div>Nenhum produto disponível</div>`;
-            return;
-        }
-
-        // Renderizar produtos
-        renderizarProdutos(data.produtos);
-    } catch (error) {
-        console.error('Erro:', error);
-    }
-}                  
-                document.getElementById('total-produtos').textContent = '0';
+            try {
+                const response = await fetch(`${API_URL}/produtos?status=aprovado`);
+                const data = await response.json();
+                
+                if (!data.produtos || data.produtos.length === 0) {
+                    document.getElementById('produtos').innerHTML = `
+                        <div style="text-align: center; padding: 60px;">
+                            <i class="fas fa-gavel" style="font-size: 48px; color: #00C853;"></i>
+                            <p style="margin-top: 20px;">Nenhum produto disponível no momento.</p>
+                            <p style="font-size: 14px; color: #999;">Faça uma oferta em breve!</p>
+                        </div>
+                    `;
+                    document.getElementById('total-produtos').textContent = '0';
                     return;
                 }
 
@@ -736,7 +717,7 @@
                     <div style="text-align: center; padding: 60px;">
                         <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #f57f17;"></i>
                         <p style="margin-top: 20px;">❌ Erro ao carregar produtos.</p>
-                        <p style="font-size: 14px;">Verifique se o servidor esta rodando em ${API_URL}</p>
+                        <p style="font-size: 14px;">Verifique se o servidor está rodando em ${API_URL}</p>
                     </div>
                 `;
             }
@@ -845,7 +826,7 @@
 
         async function fazerOferta(produtoId) {
             if (!usuarioId) {
-                alert('Faca login para fazer uma oferta!');
+                alert('Faça login para fazer uma oferta!');
                 window.location.href = 'login.html';
                 return;
             }
@@ -855,7 +836,7 @@
             const msgDiv = document.getElementById(`msg-${produtoId}`);
 
             if (!valor || valor <= 0) {
-                mostrarMensagem(msgDiv, 'Digite um valor valido (maior que zero)!', 'erro');
+                mostrarMensagem(msgDiv, 'Digite um valor válido (maior que zero)!', 'erro');
                 return;
             }
 
@@ -884,7 +865,7 @@
                 }
             } catch (error) {
                 console.error('Erro:', error);
-                mostrarMensagem(msgDiv, '❌ Erro de conexao. Verifique o servidor.', 'erro');
+                mostrarMensagem(msgDiv, '❌ Erro de conexão. Verifique o servidor.', 'erro');
             }
 
             input.value = '';
@@ -900,7 +881,6 @@
             }, 5000);
         }
 
-        // Inicializar
         atualizarTopBar();
         carregarProdutos();
     </script>
