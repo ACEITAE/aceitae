@@ -132,11 +132,14 @@ def criar_produto(produto: ProdutoCadastro, vendedor_id: int):
 # ==================================================
 
 @app.get("/produtos")
-def listar_produtos(status: str = None):
+def listar_produtos(status: str = None, vendedor_id: int = None):
     query = supabase.table("produtos").select("*")
     
     if status:
         query = query.eq("status", status)
+    
+    if vendedor_id:
+        query = query.eq("vendedor_id", vendedor_id)
     
     result = query.execute()
     return {"produtos": result.data, "total": len(result.data)}
