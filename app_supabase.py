@@ -105,7 +105,7 @@ async def upload_foto(arquivo: UploadFile = File(...)):
         nome_arquivo = f"{uuid.uuid4()}.{extensao}"
         
         # Fazer upload para o Supabase Storage
-        supabase.storage.from_("produtos").upload(
+        supabase.storage.from_("PRODUTOS").upload(
             nome_arquivo, 
             await arquivo.read(),
             file_options={"content-type": arquivo.content_type}
