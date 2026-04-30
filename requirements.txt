@@ -3,3 +3,6 @@ uvicorn
 supabase
 pydantic
 python-multipart
+passlib
+python-jose[cryptography]
+bcrypt
