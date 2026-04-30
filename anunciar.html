@@ -6,246 +6,52 @@
     <title>ACEITAÊ - Anunciar Produto</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: linear-gradient(135deg, #1A237E 0%, #283593 100%);
             min-height: 100vh;
             padding: 40px 20px;
         }
-
-        .container {
-            max-width: 700px;
-            margin: 0 auto;
-        }
-
-        .card {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .logo-text {
-            font-size: 28px;
-            font-weight: bold;
-            color: #1A237E;
-        }
-
-        .logo-text span {
-            color: #00C853;
-        }
-
-        .header p {
-            color: #666;
-            margin-top: 8px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-weight: 500;
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: all 0.3s;
-            font-family: inherit;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: #00C853;
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .categoria-group {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .categoria-btn {
-            padding: 10px 20px;
-            border: 2px solid #e0e0e0;
-            background: white;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 14px;
-        }
-
-        .categoria-btn.active {
-            background: #00C853;
-            color: white;
-            border-color: #00C853;
-        }
-
-        .categoria-btn:hover {
-            border-color: #00C853;
-        }
-
-        .foto-area {
-            border: 2px dashed #e0e0e0;
-            border-radius: 10px;
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .foto-area:hover {
-            border-color: #00C853;
-        }
-
-        .foto-area i {
-            font-size: 48px;
-            color: #999;
-            margin-bottom: 10px;
-        }
-
-        .foto-area p {
-            color: #999;
-            font-size: 14px;
-        }
-
-        .preview-fotos {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 15px;
-        }
-
-        .preview-img {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 8px;
-            border: 1px solid #e0e0e0;
-        }
-
-        .upload-status {
-            font-size: 12px;
-            margin-top: 8px;
-            color: #666;
-        }
-
-        .btn-anunciar {
-            width: 100%;
-            padding: 14px;
-            background: #00C853;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.3s;
-            margin-top: 20px;
-        }
-
-        .btn-anunciar:hover {
-            background: #00A844;
-        }
-
-        .btn-anunciar:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-
-        .back-link {
-            display: inline-block;
-            margin-top: 20px;
-            color: #666;
-            text-decoration: none;
-        }
-
-        .back-link:hover {
-            color: #00C853;
-        }
-
-        .mensagem {
-            margin-top: 15px;
-            padding: 12px;
-            border-radius: 8px;
-            display: none;
-        }
-
-        .mensagem.sucesso {
-            background: #e8f5e9;
-            color: #2e7d32;
-            display: block;
-        }
-
-        .mensagem.erro {
-            background: #ffebee;
-            color: #c62828;
-            display: block;
-        }
-
-        .user-info {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .user-name {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            color: white;
-        }
-
-        .logout-btn {
-            background: rgba(255,255,255,0.2);
-            padding: 6px 12px;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: background 0.3s;
-            color: white;
-            text-decoration: none;
-        }
-
-        .logout-btn:hover {
-            background: rgba(255,255,255,0.3);
-        }
-
-        small {
-            font-size: 11px;
-            color: #999;
-            display: block;
-            margin-top: 5px;
-        }
+        .container { max-width: 700px; margin: 0 auto; }
+        .card { background: white; border-radius: 20px; padding: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+        .header { text-align: center; margin-bottom: 30px; }
+        .logo-text { font-size: 28px; font-weight: bold; color: #1A237E; }
+        .logo-text span { color: #00C853; }
+        .header p { color: #666; margin-top: 8px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: #333; font-weight: 500; }
+        input, select, textarea { width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 16px; transition: all 0.3s; font-family: inherit; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #00C853; }
+        textarea { resize: vertical; min-height: 100px; }
+        .categoria-group { display: flex; gap: 10px; flex-wrap: wrap; }
+        .categoria-btn { padding: 10px 20px; border: 2px solid #e0e0e0; background: white; border-radius: 30px; cursor: pointer; transition: all 0.3s; font-size: 14px; }
+        .categoria-btn.active { background: #00C853; color: white; border-color: #00C853; }
+        .categoria-btn:hover { border-color: #00C853; }
+        .foto-area { border: 2px dashed #e0e0e0; border-radius: 10px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.3s; }
+        .foto-area:hover { border-color: #00C853; }
+        .foto-area i { font-size: 48px; color: #999; margin-bottom: 10px; }
+        .foto-area p { color: #999; font-size: 14px; }
+        .preview-fotos { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px; }
+        .preview-img { width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid #e0e0e0; }
+        .upload-status { font-size: 12px; margin-top: 8px; color: #666; }
+        .btn-anunciar { width: 100%; padding: 14px; background: #00C853; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.3s; margin-top: 20px; }
+        .btn-anunciar:hover { background: #00A844; }
+        .btn-anunciar:disabled { background: #ccc; cursor: not-allowed; }
+        .back-link { display: inline-block; margin-top: 20px; color: #666; text-decoration: none; }
+        .back-link:hover { color: #00C853; }
+        .mensagem { margin-top: 15px; padding: 12px; border-radius: 8px; display: none; }
+        .mensagem.sucesso { background: #e8f5e9; color: #2e7d32; display: block; }
+        .mensagem.erro { background: #ffebee; color: #c62828; display: block; }
+        .user-info { display: flex; justify-content: flex-end; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .user-name { display: flex; align-items: center; gap: 5px; color: white; }
+        .logout-btn { background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 20px; cursor: pointer; transition: background 0.3s; color: white; text-decoration: none; }
+        .logout-btn:hover { background: rgba(255,255,255,0.3); }
+        small { font-size: 11px; color: #999; display: block; margin-top: 5px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Topo com info do usuario -->
         <div class="user-info" id="userInfo"></div>
 
         <div class="card">
@@ -314,23 +120,17 @@
     <script>
         const API_URL = 'https://aceitae-api.onrender.com';
         
-        // Verificar usuario logado
-        const usuarioId = localStorage.getItem('usuario_id');
+        // Verificar usuario logado via token
+        const token = localStorage.getItem('access_token');
         const usuarioNome = localStorage.getItem('usuario_nome');
-        const usuarioTipo = localStorage.getItem('usuario_tipo');
         
-        if (!usuarioId) {
+        if (!token) {
             alert('Você precisa estar logado para anunciar!');
             window.location.href = 'login.html';
         }
         
-        if (usuarioTipo !== 'vendedor' && usuarioTipo !== 'ambos') {
-            alert('Apenas vendedores podem anunciar produtos!');
-            window.location.href = 'index.html';
-        }
-        
         document.getElementById('userInfo').innerHTML = `
-            <span class="user-name"><i class="fas fa-user-circle"></i> Olá, ${usuarioNome}</span>
+            <span class="user-name"><i class="fas fa-user-circle"></i> Olá, ${usuarioNome || 'Vendedor'}</span>
             <a href="vendedor.html" class="logout-btn"><i class="fas fa-store"></i> Meu Painel</a>
             <span class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Sair</span>
         `;
@@ -357,7 +157,6 @@
         const previewFotos = document.getElementById('previewFotos');
         const uploadStatus = document.getElementById('uploadStatus');
         let fotosUrls = [];
-        let enviandoFotos = false;
 
         fotoArea.addEventListener('click', () => {
             fotosInput.click();
@@ -370,6 +169,9 @@
             try {
                 const response = await fetch(`${API_URL}/upload-foto`, {
                     method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
                     body: formData
                 });
                 
@@ -391,7 +193,6 @@
             
             if (files.length === 0) return;
             
-            enviandoFotos = true;
             btnAnunciar.disabled = true;
             uploadStatus.innerHTML = '⏳ Enviando fotos... Aguarde';
             uploadStatus.style.color = '#f57f17';
@@ -410,18 +211,12 @@
                 }
             }
             
-            enviandoFotos = false;
             btnAnunciar.disabled = false;
-            
-            if (fotosUrls.length === 0) {
-                uploadStatus.innerHTML = '❌ Nenhuma foto foi enviada. Tente novamente.';
-                uploadStatus.style.color = '#c62828';
-            }
         });
 
         function atualizarPreview() {
             previewFotos.innerHTML = '';
-            fotosUrls.forEach((url, index) => {
+            fotosUrls.forEach((url) => {
                 const img = document.createElement('img');
                 img.src = url;
                 img.className = 'preview-img';
@@ -465,9 +260,12 @@
             btnAnunciar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
             
             try {
-                const response = await fetch(`${API_URL}/produtos?vendedor_id=${usuarioId}`, {
+                const response = await fetch(`${API_URL}/produtos`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
                     body: JSON.stringify(dados)
                 });
                 
@@ -475,11 +273,11 @@
                 
                 if (response.ok) {
                     msgDiv.className = 'mensagem sucesso';
-                    msgDiv.innerHTML = `✅ ${data.mensagem}! Aguarde a aprovação da vistoria. Redirecionando...`;
+                    msgDiv.innerHTML = `✅ Produto cadastrado com sucesso! Redirecionando...`;
                     
                     setTimeout(() => {
                         window.location.href = 'vendedor.html';
-                    }, 3000);
+                    }, 2000);
                 } else {
                     msgDiv.className = 'mensagem erro';
                     msgDiv.innerHTML = `❌ ${data.detail || 'Erro ao anunciar produto'}`;
