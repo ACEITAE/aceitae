@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ACEITAÊ - Compre com segurança</title>
+    <title>ACEITAÊ - Faça a oferta. Torça pelo ACEITAÊ!</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -13,111 +13,49 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f0f0f0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f5;
             color: #333;
         }
 
-        /* Header principal estilo OLX */
-        .main-header {
-            background: white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            padding: 12px 24px;
-        }
-
-        .header-container {
-            max-width: 1280px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .logo-area {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .logo-img {
-            height: 45px;
-            width: auto;
-        }
-
-        .logo-text {
-            font-size: 24px;
-            font-weight: bold;
-            color: #1A237E;
-        }
-
-        .logo-text span {
-            color: #00C853;
-        }
-
-        .search-box {
-            flex: 1;
-            max-width: 600px;
-            display: flex;
-            background: #f0f0f0;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .search-box input {
-            flex: 1;
-            padding: 14px 18px;
-            border: none;
-            background: transparent;
-            font-size: 15px;
-            outline: none;
-        }
-
-        .search-box button {
-            background: #00C853;
-            border: none;
-            padding: 0 24px;
+        /* Top bar com links */
+        .top-bar-links {
+            background: #1A237E;
             color: white;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .search-box button:hover {
-            background: #00A844;
-        }
-
-        .header-buttons {
+            padding: 8px 24px;
+            font-size: 12px;
             display: flex;
-            gap: 15px;
+            justify-content: flex-end;
             align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
         }
 
-        .header-buttons a {
+        .top-bar-links a {
+            color: white;
             text-decoration: none;
-            color: #666;
-            font-size: 14px;
-            transition: color 0.3s;
+            transition: opacity 0.3s;
         }
 
-        .header-buttons a:hover {
-            color: #00C853;
+        .top-bar-links a:hover {
+            opacity: 0.8;
         }
 
-        .btn-anunciar {
-            background: #00C853;
-            color: white !important;
-            padding: 8px 20px;
-            border-radius: 8px;
-            font-weight: bold;
+        .top-bar-links .separator {
+            color: rgba(255,255,255,0.3);
         }
 
-        .btn-anunciar:hover {
-            background: #00A844;
-            color: white !important;
+        .top-bar-links i {
+            margin-right: 5px;
+        }
+
+        .language-selector {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
         }
 
         .user-info {
@@ -130,63 +68,158 @@
             display: flex;
             align-items: center;
             gap: 5px;
-            font-weight: 500;
-        }
-
-        .user-name i {
-            font-size: 18px;
         }
 
         .logout-btn {
-            background: #f0f0f0;
-            padding: 6px 12px;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 10px;
             border-radius: 20px;
             cursor: pointer;
-            font-size: 13px;
-            border: none;
+            transition: background 0.3s;
         }
 
         .logout-btn:hover {
-            background: #e0e0e0;
+            background: rgba(255,255,255,0.3);
         }
 
-        /* Categorias estilo mercado livre */
-        .categories {
+        /* Main header */
+        .main-header {
             background: white;
-            border-bottom: 1px solid #e0e0e0;
-            padding: 8px 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
-        .categories-container {
+        .header-container {
             max-width: 1280px;
             margin: 0 auto;
+            padding: 16px 24px;
             display: flex;
-            gap: 24px;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
             flex-wrap: wrap;
         }
 
-        .category-item {
+        .logo-img {
+            height: 40px;
+            width: auto;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1A237E;
+        }
+
+        .logo-text span {
+            color: #00C853;
+        }
+
+        /* Texto explicativo ao lado do logo */
+        .logo-description {
+            margin-left: 20px;
+            padding-left: 20px;
+            border-left: 2px solid #e0e0e0;
+        }
+
+        .logo-description .main-text {
+            font-size: 13px;
+            color: #1A237E;
+            font-weight: 600;
+        }
+
+        .logo-description .main-text i {
+            color: #00C853;
+            margin-right: 6px;
+        }
+
+        .logo-description .sub-text {
+            font-size: 11px;
+            color: #999;
+            margin-top: 2px;
+        }
+
+        /* Barra de busca */
+        .search-box {
+            flex: 1;
+            max-width: 500px;
             display: flex;
-            flex-direction: column;
+            background: #f0f0f0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .search-box button {
+            background: #00C853;
+            border: none;
+            padding: 0 20px;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .search-box button:hover {
+            background: #00A844;
+        }
+
+        /* Botões de ação no header */
+        .action-buttons {
+            display: flex;
+            gap: 16px;
             align-items: center;
+        }
+
+        .action-buttons a {
             text-decoration: none;
             color: #666;
-            font-size: 12px;
+            font-size: 14px;
             transition: color 0.3s;
         }
 
-        .category-item i {
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
-
-        .category-item:hover {
+        .action-buttons a:hover {
             color: #00C853;
         }
 
-        .category-item.active {
+        .action-buttons .btn-outline {
+            border: 1px solid #00C853;
+            padding: 6px 12px;
+            border-radius: 6px;
             color: #00C853;
-            font-weight: bold;
+            background: white;
+        }
+
+        .action-buttons .btn-outline:hover {
+            background: #00C853;
+            color: white;
+        }
+
+        .action-buttons .btn-primary {
+            background: #00C853;
+            padding: 6px 12px;
+            border-radius: 6px;
+            color: white;
+        }
+
+        .action-buttons .btn-primary:hover {
+            background: #00A844;
         }
 
         /* Container principal */
@@ -196,14 +229,62 @@
             padding: 24px;
         }
 
+        /* Filtros */
+        .filters {
+            background: white;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 24px;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active {
+            background: #00C853;
+            color: white;
+            border-color: #00C853;
+        }
+
+        .filter-btn:hover {
+            border-color: #00C853;
+        }
+
         /* Stats */
         .stats {
-            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .total-produtos {
             color: #666;
             font-size: 14px;
         }
 
-        .stats span {
+        .total-produtos span {
             font-weight: bold;
             color: #1A237E;
         }
@@ -215,7 +296,7 @@
             gap: 20px;
         }
 
-        /* Card estilo OLX */
+        /* Card profissional */
         .produto-card {
             background: white;
             border-radius: 12px;
@@ -231,33 +312,22 @@
         }
 
         .produto-imagem {
-            height: 200px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 220px;
+            background: #f9f9f9;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 56px;
             position: relative;
-        }
-
-        .produto-imagem img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .produto-imagem i {
-            font-size: 48px;
-            color: white;
-            opacity: 0.7;
         }
 
         .badge {
             position: absolute;
-            top: 10px;
-            left: 10px;
+            top: 12px;
+            left: 12px;
             background: #FFC107;
             color: #1A237E;
-            padding: 4px 10px;
+            padding: 4px 8px;
             border-radius: 6px;
             font-size: 11px;
             font-weight: bold;
@@ -270,11 +340,11 @@
         .produto-info h3 {
             font-size: 16px;
             font-weight: 600;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             color: #333;
-            white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .categoria {
@@ -283,11 +353,14 @@
             margin-bottom: 8px;
         }
 
+        .precos {
+            margin: 12px 0;
+        }
+
         .preco-exposicao {
             font-size: 22px;
             font-weight: bold;
             color: #1A237E;
-            margin: 8px 0;
         }
 
         .preco-pretendido {
@@ -300,13 +373,14 @@
             font-size: 13px;
             color: #666;
             line-height: 1.4;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
 
+        /* Área de oferta */
         .oferta-area {
             border-top: 1px solid #f0f0f0;
             padding-top: 12px;
@@ -347,10 +421,11 @@
             background: #00A844;
         }
 
+        /* Mensagem */
         .mensagem {
-            margin-top: 10px;
-            padding: 8px;
-            border-radius: 6px;
+            margin-top: 12px;
+            padding: 8px 12px;
+            border-radius: 8px;
             font-size: 12px;
             display: none;
         }
@@ -358,15 +433,19 @@
         .mensagem.sucesso {
             background: #e8f5e9;
             color: #2e7d32;
-            display: block;
+        }
+
+        .mensagem.condicional {
+            background: #fff8e1;
+            color: #f57f17;
         }
 
         .mensagem.erro {
             background: #ffebee;
             color: #c62828;
-            display: block;
         }
 
+        /* Loading */
         .loading {
             text-align: center;
             padding: 60px;
@@ -377,7 +456,8 @@
         .footer {
             background: #1A237E;
             color: white;
-            padding: 40px 24px;
+            text-align: center;
+            padding: 40px 20px;
             margin-top: 48px;
         }
 
@@ -391,13 +471,12 @@
         }
 
         .footer-section h4 {
-            margin-bottom: 15px;
+            margin-bottom: 16px;
         }
 
         .footer-section p {
             font-size: 13px;
             opacity: 0.8;
-            margin-bottom: 8px;
         }
 
         .copyright {
@@ -410,22 +489,40 @@
         }
 
         @media (max-width: 768px) {
+            .top-bar-links {
+                justify-content: center;
+                gap: 12px;
+            }
             .header-container {
                 flex-direction: column;
+            }
+            .logo-area {
+                justify-content: center;
+            }
+            .logo-description {
+                margin-left: 0;
+                padding-left: 0;
+                border-left: none;
+                text-align: center;
             }
             .search-box {
                 max-width: 100%;
                 width: 100%;
             }
-            .categories-container {
+            .action-buttons {
                 justify-content: center;
+                flex-wrap: wrap;
+            }
+            .filters {
+                flex-direction: column;
+                align-items: flex-start;
             }
             .produtos-grid {
                 grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
                 gap: 12px;
             }
             .produto-imagem {
-                height: 150px;
+                height: 160px;
             }
             .produto-info h3 {
                 font-size: 14px;
@@ -437,279 +534,380 @@
     </style>
 </head>
 <body>
-
-<!-- Header principal -->
-<div class="main-header">
-    <div class="header-container">
-        <div class="logo-area">
-            <img src="logo.jpeg" alt="ACEITAÊ" class="logo-img" onerror="this.style.display='none'">
-            <div class="logo-text">ACEIT<span>AÊ</span></div>
-        </div>
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="Buscar produtos..." oninput="filtrarProdutos()">
-            <button onclick="filtrarProdutos()"><i class="fas fa-search"></i></button>
-        </div>
-        <div class="header-buttons" id="headerButtons">
-            <a href="cadastro.html"><i class="fas fa-user-plus"></i> Cadastrar</a>
-            <a href="login.html" class="btn-anunciar"><i class="fas fa-sign-in-alt"></i> Entrar</a>
-        </div>
-    </div>
-</div>
-
-<!-- Categorias -->
-<div class="categories">
-    <div class="categories-container" id="categoriesContainer">
-        <a href="#" class="category-item active" data-cat="todos" onclick="filtrarPorCategoria('todos'); return false;">
-            <i class="fas fa-th-large"></i>
-            <span>Todos</span>
-        </a>
-        <a href="#" class="category-item" data-cat="Eletrônicos" onclick="filtrarPorCategoria('Eletrônicos'); return false;">
-            <i class="fas fa-mobile-alt"></i>
-            <span>Eletrônicos</span>
-        </a>
-        <a href="#" class="category-item" data-cat="Moda" onclick="filtrarPorCategoria('Moda'); return false;">
-            <i class="fas fa-tshirt"></i>
-            <span>Moda</span>
-        </a>
-        <a href="#" class="category-item" data-cat="Casa" onclick="filtrarPorCategoria('Casa'); return false;">
-            <i class="fas fa-home"></i>
-            <span>Casa</span>
-        </a>
-        <a href="#" class="category-item" data-cat="Esporte" onclick="filtrarPorCategoria('Esporte'); return false;">
-            <i class="fas fa-futbol"></i>
-            <span>Esporte</span>
-        </a>
-        <a href="#" class="category-item" data-cat="Outros" onclick="filtrarPorCategoria('Outros'); return false;">
-            <i class="fas fa-box"></i>
-            <span>Outros</span>
-        </a>
-    </div>
-</div>
-
-<div class="container">
-    <div class="stats">
-        <span id="total-produtos">0</span> produtos encontrados
+    <!-- Top bar com links -->
+    <div class="top-bar-links" id="topBar">
+        <a href="vendedor.html"><i class="fas fa-store"></i> Central do Vendedor</a>
+        <span class="separator">|</span>
+        <a href="cadastro.html?tipo=vendedor"><i class="fas fa-plus-circle"></i> Vender na ACEITAÊ</a>
+        <span class="separator">|</span>
+        <a href="#"><i class="fas fa-download"></i> Baixe o App</a>
+        <span class="separator">|</span>
+        <a href="#"><i class="fab fa-instagram"></i> Siga-nos</a>
+        <span class="separator">|</span>
+        <a href="#"><i class="fas fa-bell"></i> Notificações</a>
+        <span class="separator">|</span>
+        <a href="#"><i class="fas fa-question-circle"></i> Ajuda</a>
+        <span class="separator">|</span>
+        <select class="language-selector">
+            <option>🇧🇷 Português (BR)</option>
+            <option>🇺🇸 English</option>
+            <option>🇪🇸 Español</option>
+        </select>
+        <span class="separator">|</span>
+        <a href="cadastro.html" id="btnCadastrar"><i class="fas fa-user-plus"></i> Cadastrar</a>
+        <a href="login.html" id="btnEntrar" class="btn-outline"><i class="fas fa-sign-in-alt"></i> Entrar</a>
     </div>
 
-    <div id="produtos" class="loading">
-        <i class="fas fa-spinner fa-spin"></i> Carregando produtos...
-    </div>
-</div>
-
-<div class="footer">
-    <div class="footer-content">
-        <div class="footer-section">
-            <h4>ACEITAÊ</h4>
-            <p>Plataforma de venda consignada</p>
-            <p>com ofertas condicionais</p>
-        </div>
-        <div class="footer-section">
-            <h4>Links úteis</h4>
-            <p>Como comprar</p>
-            <p>Como vender</p>
-            <p>Segurança</p>
-        </div>
-        <div class="footer-section">
-            <h4>Contato</h4>
-            <p>contato@aceitae.com</p>
-            <p>© 2026 ACEITAÊ</p>
-        </div>
-    </div>
-    <div class="copyright">
-        ACEITAÊ - Você oferta, o vendedor decide, a gente garante.
-    </div>
-</div>
-
-<script>
-const API_URL = 'https://aceitae-api-v2.onrender.com';
-
-const token = localStorage.getItem('access_token');
-const usuarioNome = localStorage.getItem('usuario_nome');
-const usuarioTipo = localStorage.getItem('usuario_tipo');
-
-// Vendedor vai para o painel
-if (usuarioTipo === 'vendedor') {
-    window.location.href = 'vendedor.html';
-}
-
-let produtosOriginais = [];
-let categoriaAtual = 'todos';
-let termoBusca = '';
-
-function atualizarTopBar() {
-    if (usuarioNome) {
-        const div = document.getElementById('headerButtons');
-        div.innerHTML = `
-            <div class="user-info">
-                <span class="user-name"><i class="fas fa-user-circle"></i> Olá, ${usuarioNome}</span>
-                <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Sair</button>
-            </div>
-        `;
-    }
-}
-
-function logout() {
-    localStorage.clear();
-    window.location.href = 'login.html';
-}
-
-async function carregarProdutos() {
-    try {
-        const response = await fetch(`${API_URL}/produtos?status=aprovado`);
-        const data = await response.json();
-
-        produtosOriginais = data.produtos || [];
-        aplicarFiltros();
-    } catch (error) {
-        document.getElementById('produtos').innerHTML = '<div class="loading">❌ Erro ao carregar produtos</div>';
-        console.error('Erro:', error);
-    }
-}
-
-function aplicarFiltros() {
-    let produtos = [...produtosOriginais];
-
-    if (categoriaAtual !== 'todos') {
-        produtos = produtos.filter(p => p.categoria === categoriaAtual);
-    }
-
-    if (termoBusca) {
-        produtos = produtos.filter(p => p.nome.toLowerCase().includes(termoBusca.toLowerCase()));
-    }
-
-    document.getElementById('total-produtos').textContent = produtos.length;
-    renderizarProdutos(produtos);
-}
-
-function renderizarProdutos(produtos) {
-    const container = document.getElementById('produtos');
-
-    if (!produtos.length) {
-        container.innerHTML = '<div class="loading">😢 Nenhum produto disponível no momento.</div>';
-        return;
-    }
-
-    container.innerHTML = '<div class="produtos-grid"></div>';
-    const grid = container.querySelector('.produtos-grid');
-
-    produtos.forEach(produto => {
-        const card = document.createElement('div');
-        card.className = 'produto-card';
-
-        // Verificar se tem foto
-        const temFoto = produto.fotos && produto.fotos.length > 0;
-        const imagemHtml = temFoto 
-            ? `<img src="${produto.fotos[0]}" alt="${produto.nome}">`
-            : `<i class="fas fa-mobile-alt"></i>`;
-
-        card.innerHTML = `
-            <div class="produto-imagem">
-                <div class="badge">Oferta</div>
-                ${imagemHtml}
-            </div>
-            <div class="produto-info">
-                <h3>${escapeHtml(produto.nome)}</h3>
-                <div class="categoria">${escapeHtml(produto.categoria)}</div>
-                <div class="preco-exposicao">R$ ${produto.valor_exposicao.toFixed(2)}</div>
-                <div class="preco-pretendido">Vendedor pretende: R$ ${produto.valor_pretendido.toFixed(2)}</div>
-                <div class="descricao">${escapeHtml(produto.descricao.substring(0, 80))}${produto.descricao.length > 80 ? '...' : ''}</div>
-                <div class="oferta-area">
-                    <div class="input-group">
-                        <input type="number" id="valor-${produto.id}" placeholder="Sua oferta (R$)" step="0.01">
-                        <button class="btn-ofertar-card" onclick="fazerOferta(${produto.id})">
-                            <i class="fas fa-gavel"></i> Ofertar
-                        </button>
+    <!-- Header principal -->
+    <div class="main-header">
+        <div class="header-container">
+            <div class="logo-area">
+                <img src="logo.jpeg" alt="ACEITAÊ" class="logo-img" onerror="this.style.display='none'">
+                <div class="logo-text">ACEIT<span>AÊ</span></div>
+                <div class="logo-description">
+                    <div class="main-text">
+                        <i class="fas fa-gavel"></i> Faça a oferta. Torça pelo ACEITAÊ!
                     </div>
-                    <div id="msg-${produto.id}" class="mensagem"></div>
+                    <div class="sub-text">
+                        Venda consignada • Você oferta, o vendedor ACEITAÊ, a gente garante!
+                    </div>
                 </div>
             </div>
-        `;
-        grid.appendChild(card);
-    });
-}
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Buscar produtos...">
+                <button onclick="filtrarProdutos()"><i class="fas fa-search"></i></button>
+            </div>
+            <div class="action-buttons">
+                <a href="#"><i class="fas fa-heart"></i></a>
+                <a href="#"><i class="fas fa-shopping-cart"></i></a>
+                <a href="#" id="btn-ofertar" class="btn-outline"><i class="fas fa-gavel"></i> Ofertar</a>
+                <a href="cadastro.html?tipo=vendedor" id="btn-anunciar" class="btn-primary">
+                    <i class="fas fa-plus-circle"></i> Anunciar Grátis
+                </a>
+            </div>
+        </div>
+    </div>
 
-function escapeHtml(text) {
-    if (!text) return '';
-    return text.replace(/[&<>]/g, function(m) {
-        if (m === '&') return '&amp;';
-        if (m === '<') return '&lt;';
-        if (m === '>') return '&gt;';
-        return m;
-    });
-}
+    <div class="container">
+        <!-- Filtros -->
+        <div class="filters">
+            <div class="filter-group">
+                <button class="filter-btn active" data-categoria="todos" onclick="filtrarPorCategoria('todos')">Todos</button>
+                <button class="filter-btn" data-categoria="Eletrônicos" onclick="filtrarPorCategoria('Eletrônicos')">Eletrônicos</button>
+                <button class="filter-btn" data-categoria="Moda" onclick="filtrarPorCategoria('Moda')">Moda</button>
+                <button class="filter-btn" data-categoria="Casa" onclick="filtrarPorCategoria('Casa')">Casa</button>
+                <button class="filter-btn" data-categoria="Esporte" onclick="filtrarPorCategoria('Esporte')">Esporte</button>
+            </div>
+        </div>
 
-function filtrarPorCategoria(categoria) {
-    categoriaAtual = categoria;
+        <!-- Stats -->
+        <div class="stats">
+            <div class="total-produtos">
+                <span id="total-produtos">0</span> produtos encontrados
+            </div>
+        </div>
 
-    document.querySelectorAll('.category-item').forEach(item => {
-        item.classList.remove('active');
-        if (item.getAttribute('data-cat') === categoria) {
-            item.classList.add('active');
+        <!-- Grid de produtos -->
+        <div id="produtos" class="loading">
+            Carregando produtos...
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>ACEITAÊ</h4>
+                <p>Plataforma de venda consignada</p>
+                <p>com ofertas condicionais</p>
+            </div>
+            <div class="footer-section">
+                <h4>Links úteis</h4>
+                <p>Como comprar</p>
+                <p>Como vender</p>
+                <p>Segurança</p>
+            </div>
+            <div class="footer-section">
+                <h4>Contato</h4>
+                <p>contato@aceitae.com</p>
+                <p>© 2026 ACEITAÊ</p>
+            </div>
+        </div>
+        <div class="copyright">
+            ACEITAÊ - Faça a oferta. Torça pelo ACEITAÊ!
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://127.0.0.1:3000';
+        
+        // ==================================================
+        // VERIFICACAO DE TIPO DE USUARIO (CORRIGIDA)
+        // ==================================================
+        const usuarioTipo = localStorage.getItem('usuario_tipo');
+        const usuarioNome = localStorage.getItem('usuario_nome');
+        const usuarioId = localStorage.getItem('usuario_id');
+        
+        // APENAS vendedores (sem ambos) sao redirecionados para o painel
+        // Usuarios do tipo "ambos" ficam na loja (podem acessar o painel pelo link)
+        if (usuarioTipo === 'vendedor') {
+            window.location.href = 'vendedor.html';
         }
-    });
+        
+        console.log('Usuario logado:', { usuarioNome, usuarioTipo, usuarioId });
+        
+        const COMPRADOR_ID = usuarioId ? parseInt(usuarioId) : 2;
+        const COMPRADOR_NOME = usuarioNome ? usuarioNome : 'Visitante';
+        
+        let produtosOriginais = [];
+        let categoriaAtual = 'todos';
+        let termoBusca = '';
 
-    aplicarFiltros();
-}
+        function atualizarTopBar() {
+            const nomeSalvo = localStorage.getItem('usuario_nome');
+            const tipoSalvo = localStorage.getItem('usuario_tipo');
+            
+            if (nomeSalvo) {
+                const topBar = document.getElementById('topBar');
+                const btnCadastrar = document.getElementById('btnCadastrar');
+                const btnEntrar = document.getElementById('btnEntrar');
+                
+                if (btnCadastrar) btnCadastrar.style.display = 'none';
+                if (btnEntrar) btnEntrar.style.display = 'none';
+                
+                if (!document.getElementById('userInfoDiv')) {
+                    const userDiv = document.createElement('div');
+                    userDiv.id = 'userInfoDiv';
+                    userDiv.className = 'user-info';
+                    
+                    let painelLink = '';
+                    if (tipoSalvo === 'ambos') {
+                        painelLink = `<a href="vendedor.html" style="color: white; text-decoration: none; margin-right: 10px; background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 20px;">
+                                        <i class="fas fa-store"></i> Meu Painel
+                                     </a>`;
+                    }
+                    
+                    userDiv.innerHTML = `
+                        ${painelLink}
+                        <span class="user-name"><i class="fas fa-user-circle"></i> Olá, ${nomeSalvo}</span>
+                        <span class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Sair</span>
+                    `;
+                    topBar.appendChild(userDiv);
+                }
+            }
+        }
+        
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+        
+        // Botao Ofertar - rola ate os produtos
+        const btnOfertar = document.getElementById('btn-ofertar');
+        if (btnOfertar) {
+            btnOfertar.addEventListener('click', function(e) {
+                e.preventDefault();
+                const produtosGrid = document.querySelector('.produtos-grid');
+                if (produtosGrid) {
+                    produtosGrid.scrollIntoView({ behavior: 'smooth' });
+                } else if (document.querySelector('.filters')) {
+                    document.querySelector('.filters').scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        }
 
-function filtrarProdutos() {
-    termoBusca = document.getElementById('searchInput').value;
-    aplicarFiltros();
-}
+        async function carregarProdutos() {
+            try {
+                const response = await fetch(`${API_URL}/produtos?status=aprovado`);
+                const data = await response.json();
+                
+                if (!data.produtos || data.produtos.length === 0) {
+                    document.getElementById('produtos').innerHTML = `
+                        <div style="text-align: center; padding: 60px;">
+                            <i class="fas fa-gavel" style="font-size: 48px; color: #00C853;"></i>
+                            <p style="margin-top: 20px;">Nenhum produto disponivel no momento.</p>
+                            <p style="font-size: 14px; color: #999;">Faca uma oferta em breve!</p>
+                        </div>
+                    `;
+                    document.getElementById('total-produtos').textContent = '0';
+                    return;
+                }
 
-async function fazerOferta(produtoId) {
-    const tokenAtual = localStorage.getItem('access_token');
+                produtosOriginais = data.produtos;
+                aplicarFiltros();
+            } catch (error) {
+                console.error('Erro:', error);
+                document.getElementById('produtos').innerHTML = `
+                    <div style="text-align: center; padding: 60px;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #f57f17;"></i>
+                        <p style="margin-top: 20px;">❌ Erro ao carregar produtos.</p>
+                        <p style="font-size: 14px;">Verifique se o servidor esta rodando em ${API_URL}</p>
+                    </div>
+                `;
+            }
+        }
 
-    if (!tokenAtual) {
-        alert('Faça login para fazer uma oferta!');
-        window.location.href = 'login.html';
-        return;
-    }
+        function aplicarFiltros() {
+            let produtosFiltrados = [...produtosOriginais];
+            
+            if (categoriaAtual !== 'todos') {
+                produtosFiltrados = produtosFiltrados.filter(p => p.categoria === categoriaAtual);
+            }
+            
+            if (termoBusca) {
+                produtosFiltrados = produtosFiltrados.filter(p => 
+                    p.nome.toLowerCase().includes(termoBusca.toLowerCase()) ||
+                    p.descricao.toLowerCase().includes(termoBusca.toLowerCase())
+                );
+            }
+            
+            document.getElementById('total-produtos').textContent = produtosFiltrados.length;
+            renderizarProdutos(produtosFiltrados);
+        }
 
-    const input = document.getElementById(`valor-${produtoId}`);
-    const valor = parseFloat(input.value);
-    const msgDiv = document.getElementById(`msg-${produtoId}`);
+        function renderizarProdutos(produtos) {
+            const container = document.getElementById('produtos');
+            
+            if (produtos.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 60px;">
+                        <i class="fas fa-search" style="font-size: 48px; color: #ccc;"></i>
+                        <p style="margin-top: 20px;">Nenhum produto encontrado.</p>
+                        <p style="font-size: 14px; color: #999;">Tente outra busca ou categoria.</p>
+                    </div>
+                `;
+                return;
+            }
 
-    if (!valor || valor <= 0) {
-        mostrarMensagem(msgDiv, 'Digite um valor válido (maior que zero)!', 'erro');
-        return;
-    }
+            container.innerHTML = '<div class="produtos-grid"></div>';
+            const grid = container.querySelector('.produtos-grid');
 
-    try {
-        const response = await fetch(`${API_URL}/ofertas`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${tokenAtual}`
-            },
-            body: JSON.stringify({ produto_id: produtoId, valor: valor })
-        });
+            for (const produto of produtos) {
+                const card = document.createElement('div');
+                card.className = 'produto-card';
+                card.innerHTML = `
+                    <div class="produto-imagem">
+                        <div class="badge">Oferta</div>
+                        <i class="fas fa-mobile-alt" style="font-size: 48px; color: #999;"></i>
+                    </div>
+                    <div class="produto-info">
+                        <h3>${escapeHtml(produto.nome)}</h3>
+                        <div class="categoria">${escapeHtml(produto.categoria)}</div>
+                        <div class="descricao">${escapeHtml(produto.descricao.substring(0, 80))}${produto.descricao.length > 80 ? '...' : ''}</div>
+                        <div class="precos">
+                            <div class="preco-exposicao">R$ ${produto.valor_exposicao.toFixed(2)}</div>
+                            <div class="preco-pretendido">Vendedor pretende: R$ ${produto.valor_pretendido.toFixed(2)}</div>
+                        </div>
+                        <div class="oferta-area">
+                            <div class="input-group">
+                                <input type="number" id="valor-${produto.id}" placeholder="Sua oferta (R$)" step="0.01">
+                                <button class="btn-ofertar-card" onclick="fazerOferta(${produto.id})">
+                                    <i class="fas fa-gavel"></i> Ofertar
+                                </button>
+                            </div>
+                            <div id="msg-${produto.id}" class="mensagem"></div>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            }
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
 
-        const data = await response.json();
+        function filtrarPorCategoria(categoria) {
+            categoriaAtual = categoria;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-categoria') === categoria) {
+                    btn.classList.add('active');
+                }
+            });
+            aplicarFiltros();
+        }
 
-        if (response.ok) {
-            mostrarMensagem(msgDiv, `✅ ${data.mensagem}`, 'sucesso');
+        function filtrarProdutos() {
+            termoBusca = document.getElementById('searchInput').value;
+            aplicarFiltros();
+        }
+
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.addEventListener('keyup', function(e) {
+                if (e.key === 'Enter') {
+                    filtrarProdutos();
+                }
+            });
+        }
+
+        async function fazerOferta(produtoId) {
+            if (!usuarioId) {
+                alert('Faca login para fazer uma oferta!');
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            const input = document.getElementById(`valor-${produtoId}`);
+            const valor = parseFloat(input.value);
+            const msgDiv = document.getElementById(`msg-${produtoId}`);
+
+            if (!valor || valor <= 0) {
+                mostrarMensagem(msgDiv, 'Digite um valor valido (maior que zero)!', 'erro');
+                return;
+            }
+
+            msgDiv.style.display = 'block';
+            msgDiv.innerHTML = '⏳ Enviando oferta...';
+            msgDiv.className = 'mensagem';
+
+            try {
+                const response = await fetch(`${API_URL}/ofertas?comprador_id=${COMPRADOR_ID}&comprador_nome=${COMPRADOR_NOME}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ produto_id: produtoId, valor: valor })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    if (data.status === 'venda_automatica') {
+                        mostrarMensagem(msgDiv, '✅ ' + data.mensagem, 'sucesso');
+                        setTimeout(() => carregarProdutos(), 2000);
+                    } else {
+                        mostrarMensagem(msgDiv, '🟡 ' + data.mensagem, 'condicional');
+                    }
+                } else {
+                    mostrarMensagem(msgDiv, '❌ ' + (data.detail || 'Erro ao fazer oferta'), 'erro');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                mostrarMensagem(msgDiv, '❌ Erro de conexao. Verifique o servidor.', 'erro');
+            }
+
             input.value = '';
-            setTimeout(() => carregarProdutos(), 2000);
-        } else {
-            mostrarMensagem(msgDiv, `❌ ${data.detail || 'Erro ao fazer oferta'}`, 'erro');
         }
-    } catch (error) {
-        mostrarMensagem(msgDiv, '❌ Erro de conexão', 'erro');
-    }
-}
 
-function mostrarMensagem(elemento, texto, tipo) {
-    elemento.innerHTML = texto;
-    elemento.className = `mensagem ${tipo === 'sucesso' ? 'sucesso' : 'erro'}`;
-    elemento.style.display = 'block';
+        function mostrarMensagem(elemento, texto, tipo) {
+            elemento.innerHTML = texto;
+            elemento.className = `mensagem ${tipo}`;
+            elemento.style.display = 'block';
 
-    setTimeout(() => {
-        elemento.style.display = 'none';
-    }, 5000);
-}
+            setTimeout(() => {
+                elemento.style.display = 'none';
+            }, 5000);
+        }
 
-atualizarTopBar();
-carregarProdutos();
-</script>
+        // Inicializar
+        atualizarTopBar();
+        carregarProdutos();
+    </script>
 </body>
 </html>
