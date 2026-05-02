@@ -1,6 +1,7 @@
-from fastapi import FastAPI, HTTPException, File, UploadFile, Depends, Response
+from fastapi import FastAPI, HTTPException, File, UploadFile, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
+from starlette.middleware.base import BaseHTTPMiddleware
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime, timedelta
@@ -9,7 +10,7 @@ from jose import jwt
 from supabase_config import supabase
 import uuid
 
-SECRET_KEY = "SUA_CHAVE_SUPER_SECRETA"
+SECRET_KEY = "ACEITAÊ2026@SuperSeguro"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
@@ -18,19 +19,29 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 app = FastAPI(title="ACEITAÊ API", version="3.0.0")
 
-# ✅ CORS – resolve qualquer problema
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# 🚀 Middleware FORÇA CORS em TODAS as respostas
+@app.middleware("http")
+async def add_cors_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Credentials"] = "true"
+    response.headers["Access-Control-Allow-Methods"] = "*"
+    response.headers["Access-Control-Allow-Headers"] = "*"
+    return response
 
+# 🧹 Responde imediatamente às requisições OPTIONS (pré-voo)
 @app.options("/{rest_of_path:path}")
 async def preflight_handler():
-    return Response(status_code=200)
+    return Response(
+        status_code=200,
+        headers={
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "*",
+            "Access-Control-Allow-Headers": "*",
+        },
+    )
 
+from fastapi import Response
 # ==================================================
 # SEGURANÇA
 # ==================================================
@@ -38,8 +49,8 @@ async def preflight_handler():
 def hash_senha(senha):
     return pwd_context.hash(senha)
 
-def verificar_senha(senha, hash_senha):
-    return pwd_context.verify(senha, hash_senha)
+def verificar_senha(senha, hash):
+    return pwd_context.verify(senha, hash)
 
 def criar_token(data: dict):
     to_encode = data.copy()
