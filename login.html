@@ -4,14 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ACEITAÊ - Login</title>
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #1A237E 0%, #283593 100%);
             min-height: 100vh;
             display: flex;
@@ -19,198 +16,108 @@
             align-items: center;
             padding: 20px;
         }
-
-        .container { max-width: 420px; width: 100%; }
-
-        .card {
-            background: white;
-            border-radius: 20px;
-            padding: 35px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-        }
-
-        .logo {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        .logo h1 {
-            font-size: 30px;
-            color: #1A237E;
-        }
-
-        .logo span { color: #00C853; }
-
-        .logo p {
-            font-size: 14px;
-            color: #777;
-        }
-
-        .form-group { margin-bottom: 18px; }
-
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 500;
-        }
-
-        input {
-            width: 100%;
-            padding: 12px;
-            border-radius: 10px;
-            border: 2px solid #e0e0e0;
-            font-size: 15px;
-        }
-
-        input:focus {
-            outline: none;
-            border-color: #00C853;
-        }
-
-        .btn-login {
-            width: 100%;
-            padding: 14px;
-            background: #00C853;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        .btn-login:hover {
-            background: #00A844;
-        }
-
-        .mensagem {
-            margin-top: 15px;
-            padding: 10px;
-            border-radius: 8px;
-            display: none;
-            text-align: center;
-            font-size: 14px;
-        }
-
-        .sucesso { background: #e8f5e9; color: #2e7d32; display: block; }
-        .erro { background: #ffebee; color: #c62828; display: block; }
-
-        .cadastro {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 14px;
-        }
-
-        .cadastro a {
-            color: #1A237E;
-            font-weight: bold;
-            text-decoration: none;
-        }
+        .container { max-width: 450px; width: 100%; }
+        .card { background: white; border-radius: 20px; padding: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+        .logo { text-align: center; margin-bottom: 30px; }
+        .logo h1 { font-size: 32px; color: #1A237E; }
+        .logo h1 span { color: #00C853; }
+        .logo p { color: #666; font-size: 14px; margin-top: 5px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: #333; font-weight: 500; }
+        input { width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 16px; transition: all 0.3s; }
+        input:focus { outline: none; border-color: #00C853; }
+        .btn-login { width: 100%; padding: 14px; background: #00C853; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .btn-login:hover { background: #00A844; }
+        .cadastro-link { text-align: center; margin-top: 20px; color: #666; }
+        .cadastro-link a { color: #1A237E; text-decoration: none; font-weight: bold; }
+        .mensagem { margin-top: 15px; padding: 12px; border-radius: 8px; display: none; }
+        .mensagem.sucesso { background: #e8f5e9; color: #2e7d32; display: block; }
+        .mensagem.erro { background: #ffebee; color: #c62828; display: block; }
     </style>
 </head>
-
 <body>
-
-<div class="container">
-    <div class="card">
-
-        <div class="logo">
-            <h1>ACEIT<span>AÊ</span></h1>
-            <p>Faça login na sua conta</p>
-        </div>
-
-        <form id="loginForm">
-            <div class="form-group">
-                <label>E-mail</label>
-                <input type="email" id="email" required>
+    <div class="container">
+        <div class="card">
+            <div class="logo">
+                <h1>ACEIT<span>AÊ</span></h1>
+                <p>Faça login na sua conta</p>
             </div>
 
-            <div class="form-group">
-                <label>Senha</label>
-                <input type="password" id="senha" required>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>E-mail</label>
+                    <input type="email" id="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Senha</label>
+                    <input type="password" id="senha" required>
+                </div>
+
+                <button type="submit" class="btn-login">
+                    <i class="fas fa-sign-in-alt"></i> Entrar
+                </button>
+            </form>
+
+            <div class="cadastro-link">
+                Não tem conta? <a href="cadastro.html">Cadastre-se</a>
             </div>
-
-            <button class="btn-login">
-                <i class="fas fa-sign-in-alt"></i> Entrar
-            </button>
-        </form>
-
-        <div id="mensagem" class="mensagem"></div>
-
-        <div class="cadastro">
-            Não tem conta? <a href="cadastro.html">Cadastre-se</a>
+            <div id="mensagem" class="mensagem"></div>
         </div>
-
     </div>
-</div>
 
-<script>
-const API_URL = 'https://aceitae-api.onrender.com';
+    <script>
+        const API_URL = 'https://aceitae-api.onrender.com';
 
-// 🔥 Se já estiver logado, pula login
-if (localStorage.getItem('access_token')) {
-    const tipo = localStorage.getItem('usuario_tipo');
-    if (tipo === 'vendedor' || tipo === 'ambos') {
-        window.location.href = 'vendedor.html';
-    } else {
-        window.location.href = 'index.html';
-    }
-}
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
 
-document.getElementById('loginForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
+            const email = document.getElementById('email').value;
+            const senha = document.getElementById('senha').value;
+            const msgDiv = document.getElementById('mensagem');
 
-    const email = document.getElementById('email').value;
-    const senha = document.getElementById('senha').value;
+            if (!email || !senha) {
+                msgDiv.className = 'mensagem erro';
+                msgDiv.innerHTML = '❌ Preencha todos os campos!';
+                return;
+            }
 
-    if (!email || !senha) {
-        mostrar('❌ Preencha todos os campos', 'erro');
-        return;
-    }
+            try {
+                const response = await fetch(`${API_URL}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, senha })
+                });
 
-    try {
-        const response = await fetch(`${API_URL}/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, senha })
-        });
+                const data = await response.json();
 
-        const data = await response.json();
+                if (response.ok) {
+                    // Salvar token e dados do usuário
+                    localStorage.setItem('access_token', data.access_token);
+                    localStorage.setItem('usuario_id', data.usuario_id);
+                    localStorage.setItem('usuario_nome', data.nome);
+                    localStorage.setItem('usuario_tipo', data.tipo);
 
-        if (response.ok) {
+                    msgDiv.className = 'mensagem sucesso';
+                    msgDiv.innerHTML = `✅ ${data.mensagem || 'Login realizado'}! Redirecionando...`;
 
-            // 🔥 salvar dados
-            localStorage.setItem('access_token', data.access_token);
-            localStorage.setItem('usuario_id', data.usuario_id);
-            localStorage.setItem('usuario_nome', data.nome);
-            localStorage.setItem('usuario_tipo', data.tipo);
-
-            mostrar('✅ Login realizado!', 'sucesso');
-
-            setTimeout(() => {
-                if (data.tipo === 'vendedor' || data.tipo === 'ambos') {
-                    window.location.href = 'vendedor.html';
+                    setTimeout(() => {
+                        if (data.tipo === 'vendedor') {
+                            window.location.href = 'vendedor.html';
+                        } else {
+                            window.location.href = 'index.html';
+                        }
+                    }, 1500);
                 } else {
-                    window.location.href = 'index.html';
+                    msgDiv.className = 'mensagem erro';
+                    msgDiv.innerHTML = `❌ ${data.detail || 'E-mail ou senha incorretos'}`;
                 }
-            }, 1000);
-
-        } else {
-            mostrar(data.detail || 'Erro no login', 'erro');
-        }
-
-    } catch (err) {
-        console.error(err);
-        mostrar('Erro ao conectar com servidor', 'erro');
-    }
-});
-
-function mostrar(texto, tipo) {
-    const msg = document.getElementById('mensagem');
-    msg.innerHTML = texto;
-    msg.className = `mensagem ${tipo}`;
-}
-</script>
-
+            } catch (error) {
+                console.error('Erro:', error);
+                msgDiv.className = 'mensagem erro';
+                msgDiv.innerHTML = `❌ Erro de conexão: ${error.message}`;
+            }
+        });
+    </script>
 </body>
 </html>
