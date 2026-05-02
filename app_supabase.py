@@ -5,35 +5,37 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime, timedelta
 from passlib.context import CryptContext
-from jose import JWTError, jwt
+from jose import jwt
 from supabase_config import supabase
 import uuid
+import os
 
 # ==================================================
-# CONFIGURAÇÕES
+# CONFIGURAÇÕES SEGURAS
 # ==================================================
 
-SECRET_KEY = "SUA_CHAVE_SUPER_SECRETA"
+SECRET_KEY = os.getenv("SECRET_KEY", "dev_secret")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
-app = FastAPI(
-    title="ACEITAÊ API",
-    version="3.0.0"
-)
+app = FastAPI(title="ACEITAÊ API", version="3.1.0")
 
-# CORS
+# ==================================================
+# CORS (AJUSTADO PRA PRODUÇÃO + TESTE)
+# ==================================================
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://www.aceitae.com",
         "https://aceitae.com",
+        "https://www.aceitae.com",
         "https://aceitae.vercel.app",
         "http://localhost:3000",
-        "http://127.0.0.1:3000"
+        "http://127.0.0.1:3000",
+        "*"  # 🔥 remove depois se quiser segurança máxima
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -41,25 +43,28 @@ app.add_middleware(
 )
 
 # ==================================================
-# FUNÇÕES DE SEGURANÇA
+# SEGURANÇA
 # ==================================================
 
 def hash_senha(senha):
     return pwd_context.hash(senha)
 
-def verificar_senha(senha, hash):
-    return pwd_context.verify(senha, hash)
+def verificar_senha(senha, senha_hash):
+    return pwd_context.verify(senha, senha_hash)
 
 def criar_token(data: dict):
-    to_encode = data.copy()
+    payload = data.copy()
     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    payload.update({"exp": expire})
+    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
 def get_usuario_logado(token: str = Depends(oauth2_scheme)):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        return int(payload.get("sub"))
+        user_id = payload.get("sub")
+        if not user_id:
+            raise HTTPException(status_code=401, detail="Token inválido")
+        return int(user_id)
     except:
         raise HTTPException(status_code=401, detail="Token inválido")
 
@@ -99,10 +104,14 @@ class LoginData(BaseModel):
 
 @app.post("/cadastrar")
 def cadastrar(usuario: UsuarioCadastro):
-    existing = supabase.table("usuarios").select("*").eq("email", usuario.email).execute()
 
-    if existing.data:
+    existente = supabase.table("usuarios").select("id").eq("email", usuario.email).execute()
+
+    if existente.data:
         raise HTTPException(status_code=400, detail="E-mail já cadastrado")
+
+    if usuario.tipo == "vendedor" and not usuario.cpf:
+        raise HTTPException(status_code=400, detail="CPF obrigatório para vendedor")
 
     data = usuario.dict()
     data["senha"] = hash_senha(usuario.senha)
@@ -111,7 +120,8 @@ def cadastrar(usuario: UsuarioCadastro):
 
     return {
         "mensagem": "Cadastro realizado!",
-        "usuario_id": result.data[0]["id"]
+        "usuario_id": result.data[0]["id"],
+        "nome": result.data[0]["nome"]
     }
 
 # ==================================================
@@ -120,6 +130,7 @@ def cadastrar(usuario: UsuarioCadastro):
 
 @app.post("/login")
 def login(usuario: LoginData):
+
     result = supabase.table("usuarios").select("*").eq("email", usuario.email).execute()
 
     if not result.data:
@@ -139,7 +150,8 @@ def login(usuario: LoginData):
         "access_token": token,
         "token_type": "bearer",
         "usuario_id": user["id"],
-        "nome": user["nome"]
+        "nome": user["nome"],
+        "tipo": user["tipo"]
     }
 
 # ==================================================
@@ -155,9 +167,10 @@ async def upload_foto(arquivo: UploadFile = File(...)):
     conteudo = await arquivo.read()
 
     if len(conteudo) > 5 * 1024 * 1024:
-        raise HTTPException(status_code=400, detail="Arquivo muito grande")
+        raise HTTPException(status_code=400, detail="Arquivo muito grande (max 5MB)")
 
-    nome_arquivo = f"{uuid.uuid4()}.jpg"
+    extensao = arquivo.filename.split(".")[-1]
+    nome_arquivo = f"{uuid.uuid4()}.{extensao}"
 
     supabase.storage.from_("produtos").upload(
         nome_arquivo,
@@ -183,7 +196,7 @@ def criar_produto(produto: ProdutoCadastro, user_id: int = Depends(get_usuario_l
 
     valor_exposicao = round(produto.valor_pretendido * 1.10, 2)
 
-    novo_produto = {
+    novo = {
         "vendedor_id": user_id,
         "vendedor_nome": vendedor.data[0]["nome"],
         "nome": produto.nome,
@@ -193,10 +206,11 @@ def criar_produto(produto: ProdutoCadastro, user_id: int = Depends(get_usuario_l
         "valor_exposicao": valor_exposicao,
         "status": "aguardando_vistoria",
         "fotos": produto.fotos or [],
-        "video": produto.video
+        "video": produto.video,
+        "criado_em": datetime.utcnow().isoformat()
     }
 
-    result = supabase.table("produtos").insert(novo_produto).execute()
+    result = supabase.table("produtos").insert(novo).execute()
 
     return {"produto_id": result.data[0]["id"]}
 
@@ -206,13 +220,18 @@ def criar_produto(produto: ProdutoCadastro, user_id: int = Depends(get_usuario_l
 
 @app.get("/produtos")
 def listar_produtos(status: str = None):
+
     query = supabase.table("produtos").select("*")
 
     if status:
         query = query.eq("status", status)
 
     result = query.execute()
-    return {"produtos": result.data}
+
+    return {
+        "produtos": result.data,
+        "total": len(result.data)
+    }
 
 # ==================================================
 # APROVAR PRODUTO
@@ -220,6 +239,7 @@ def listar_produtos(status: str = None):
 
 @app.put("/produtos/{produto_id}/aprovar")
 def aprovar_produto(produto_id: int):
+
     result = supabase.table("produtos").update({"status": "aprovado"}).eq("id", produto_id).execute()
 
     if not result.data:
@@ -241,9 +261,6 @@ def fazer_oferta(oferta: OfertaCadastro, user_id: int = Depends(get_usuario_loga
 
     produto = produto.data[0]
 
-    if produto["status"] == "vendido":
-        raise HTTPException(status_code=400, detail="Produto já vendido")
-
     if produto["status"] != "aprovado":
         raise HTTPException(status_code=400, detail="Produto indisponível")
 
@@ -253,36 +270,35 @@ def fazer_oferta(oferta: OfertaCadastro, user_id: int = Depends(get_usuario_loga
     if valor_oferta >= valor_pretendido:
         supabase.table("produtos").update({"status": "vendido"}).eq("id", produto["id"]).execute()
         status_oferta = "venda_automatica"
-        mensagem = "Venda automática realizada!"
+        mensagem = "Venda automática!"
     else:
         status_oferta = "pendente"
         mensagem = "Oferta enviada!"
 
-    nova_oferta = {
+    nova = {
         "produto_id": produto["id"],
         "comprador_id": user_id,
         "valor": valor_oferta,
         "status": status_oferta,
-        "condicional": valor_oferta < valor_pretendido
+        "condicional": valor_oferta < valor_pretendido,
+        "criado_em": datetime.utcnow().isoformat()
     }
 
-    result = supabase.table("ofertas").insert(nova_oferta).execute()
+    result = supabase.table("ofertas").insert(nova).execute()
 
     return {
         "mensagem": mensagem,
+        "status": status_oferta,
         "oferta_id": result.data[0]["id"]
     }
 
 # ==================================================
-# ROOT
+# HEALTH
 # ==================================================
 
 @app.get("/")
 def root():
-    return {
-        "mensagem": "ACEITAÊ está no ar!",
-        "versao": "3.0.0"
-    }
+    return {"msg": "ACEITAÊ rodando 🚀"}
 
 @app.get("/health")
 def health():
