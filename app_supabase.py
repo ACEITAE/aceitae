@@ -29,19 +29,14 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-        "https://aceitae.vercel.app",
-        "https://aceitae.com",
-        "https://www.aceitae.com",
-        "https://aceitae.com.br",
-        "https://www.aceitae.com.br"
-    ],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+from fastapi import Response
+
 @app.options("/{rest_of_path:path}")
 async def preflight_handler():
     return Response(status_code=200)
