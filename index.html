@@ -107,20 +107,35 @@
     }
 
     async function fazerOferta(produtoId) {
-        if (!token) {
-            alert('Faça login!');
-            window.location.href = 'login.html';
-            return;
-        }
 
-        const valor = parseFloat(document.getElementById(`valor-${produtoId}`).value);
-        const msg = document.getElementById(`msg-${produtoId}`);
+    const token = localStorage.getItem('access_token');
 
-        if (!valor) {
-            msg.innerHTML = 'Valor inválido';
-            return;
-        }
+    if (!token) {
+        alert('Faça login!');
+        window.location.href = 'login.html';
+        return;
+    }
 
+    const input = document.getElementById(`valor-${produtoId}`);
+    const valor = parseFloat(input.value);
+
+    if (!valor) return;
+
+    const response = await fetch(`${API_URL}/ofertas`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}` // 🔥 ESSENCIAL
+        },
+        body: JSON.stringify({
+            produto_id: produtoId,
+            valor: valor
+        })
+    });
+
+    const data = await response.json();
+    alert(JSON.stringify(data));
+}
         try {
             const response = await fetch(`${API_URL}/ofertas`, {
                 method: 'POST',
