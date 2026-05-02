@@ -1,7 +1,6 @@
-from fastapi import FastAPI, HTTPException, File, UploadFile, Depends, Request
+from fastapi import FastAPI, HTTPException, File, UploadFile, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
-from starlette.middleware.base import BaseHTTPMiddleware
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime, timedelta
@@ -10,7 +9,7 @@ from jose import jwt
 from supabase_config import supabase
 import uuid
 
-SECRET_KEY = "VKR1vkr#vkr"
+SECRET_KEY = "ACEITAÊ2026@SuperSeguro"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
@@ -19,29 +18,20 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 app = FastAPI(title="ACEITAÊ API", version="3.0.0")
 
-# 🚀 Middleware FORÇA CORS em TODAS as respostas
-@app.middleware("http")
-async def add_cors_headers(request: Request, call_next):
-    response = await call_next(request)
-    response.headers["Access-Control-Allow-Origin"] = "*"
-    response.headers["Access-Control-Allow-Credentials"] = "true"
-    response.headers["Access-Control-Allow-Methods"] = "*"
-    response.headers["Access-Control-Allow-Headers"] = "*"
-    return response
+# ✅ CORS padrão que já funcionou antes
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",
+        "https://aceitae.vercel.app",
+        "https://aceitae.com.br",
+        "https://www.aceitae.com.br"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-# 🧹 Responde imediatamente às requisições OPTIONS (pré-voo)
-@app.options("/{rest_of_path:path}")
-async def preflight_handler():
-    return Response(
-        status_code=200,
-        headers={
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "*",
-            "Access-Control-Allow-Headers": "*",
-        },
-    )
-
-from fastapi import Response
 # ==================================================
 # SEGURANÇA
 # ==================================================
