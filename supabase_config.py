@@ -1,12 +1,35 @@
 from supabase import create_client, Client
 import os
 
-SUPABASE_URL = os.environ.get("SUPABASE_URL")
-SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
+# ==================================================
+# CONFIGURAÇÃO
+# ==================================================
+
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+
+# ==================================================
+# VALIDAÇÃO
+# ==================================================
 
 if not SUPABASE_URL or not SUPABASE_KEY:
-    raise ValueError("As variáveis SUPABASE_URL e SUPABASE_KEY precisam estar configuradas no ambiente")
+    raise RuntimeError(
+        "❌ SUPABASE_URL e SUPABASE_KEY não configuradas.\n"
+        "👉 Configure no Render ou no .env local."
+    )
 
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+# ==================================================
+# CLIENTE
+# ==================================================
 
-print("✅ Conectado ao Supabase!")
+try:
+    supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+except Exception as e:
+    raise RuntimeError(f"Erro ao conectar no Supabase: {str(e)}")
+
+# ==================================================
+# LOG CONTROLADO
+# ==================================================
+
+if os.getenv("ENV") != "production":
+    print("✅ Supabase conectado com sucesso")
