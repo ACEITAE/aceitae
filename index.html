@@ -1,3 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>ACEITAÊ</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #f5f5f5;
+            margin: 0;
+        }
+
+        .topbar {
+            background: #1A237E;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .produtos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px,1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .produto-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        input {
+            width: 100%;
+            margin-top: 10px;
+            padding: 8px;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 10px;
+            background: #00C853;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- TOPO -->
+<div class="topbar" id="topBar">
+    <div>ACEITAÊ</div>
+
+    <div>
+        <button id="btnEntrar" onclick="location.href='login.html'">Entrar</button>
+        <button id="btnCadastrar" onclick="location.href='cadastro.html'">Cadastrar</button>
+    </div>
+</div>
+
+<!-- BUSCA -->
+<div style="padding:20px;">
+    <input type="text" id="searchInput" placeholder="Buscar..." oninput="filtrarProdutos()">
+</div>
+
+<!-- INFO -->
+<div style="padding:0 20px;">
+    Total: <span id="total-produtos">0</span>
+</div>
+
+<!-- PRODUTOS -->
+<div id="produtos"></div>
+
 <script>
 const API_URL = 'https://aceitae-api.onrender.com';
 
@@ -10,26 +88,20 @@ if (usuarioTipo === 'vendedor') {
 }
 
 let produtosOriginais = [];
-let categoriaAtual = 'todos';
 let termoBusca = '';
 
 function atualizarTopBar() {
     if (usuarioNome) {
-        const topBar = document.getElementById('topBar');
         document.getElementById('btnCadastrar').style.display = 'none';
         document.getElementById('btnEntrar').style.display = 'none';
 
-        if (!document.getElementById('userInfoDiv')) {
-            const userDiv = document.createElement('div');
-            userDiv.className = 'user-info';
+        const userDiv = document.createElement('div');
+        userDiv.innerHTML = `
+            Olá, ${usuarioNome}
+            <button onclick="logout()">Sair</button>
+        `;
 
-            userDiv.innerHTML = `
-                <span><i class="fas fa-user-circle"></i> Olá, ${usuarioNome}</span>
-                <a class="logout-btn" onclick="logout()">Sair</a>
-            `;
-
-            topBar.appendChild(userDiv);
-        }
+        document.getElementById('topBar').appendChild(userDiv);
     }
 }
 
@@ -46,18 +118,13 @@ async function carregarProdutos() {
         produtosOriginais = data.produtos || [];
         aplicarFiltros();
 
-    } catch (error) {
-        document.getElementById('produtos').innerHTML = 'Erro ao carregar produtos';
-        console.error(error);
+    } catch {
+        document.getElementById('produtos').innerHTML = 'Erro ao carregar';
     }
 }
 
 function aplicarFiltros() {
     let produtos = [...produtosOriginais];
-
-    if (categoriaAtual !== 'todos') {
-        produtos = produtos.filter(p => p.categoria === categoriaAtual);
-    }
 
     if (termoBusca) {
         produtos = produtos.filter(p =>
@@ -73,7 +140,7 @@ function renderizarProdutos(produtos) {
     const container = document.getElementById('produtos');
 
     if (!produtos.length) {
-        container.innerHTML = 'Nenhum produto encontrado';
+        container.innerHTML = 'Nenhum produto';
         return;
     }
 
@@ -85,19 +152,12 @@ function renderizarProdutos(produtos) {
         card.className = 'produto-card';
 
         card.innerHTML = `
-            <div class="produto-imagem">
-                <i class="fas fa-box"></i>
-            </div>
-            <div class="produto-info">
-                <h3>${produto.nome}</h3>
-                <div class="categoria">${produto.categoria}</div>
-                <div class="preco-exposicao">R$ ${produto.valor_exposicao}</div>
+            <h3>${produto.nome}</h3>
+            <p>${produto.categoria}</p>
+            <p>R$ ${produto.valor_exposicao}</p>
 
-                <input type="number" id="valor-${produto.id}" placeholder="Sua oferta">
-                <button onclick="fazerOferta(${produto.id})">Ofertar</button>
-
-                <div id="msg-${produto.id}"></div>
-            </div>
+            <input type="number" id="valor-${produto.id}" placeholder="Sua oferta">
+            <button onclick="fazerOferta(${produto.id})">Ofertar</button>
         `;
 
         grid.appendChild(card);
@@ -113,46 +173,24 @@ async function fazerOferta(produtoId) {
         return;
     }
 
-    const input = document.getElementById(`valor-${produtoId}`);
-    const msg = document.getElementById(`msg-${produtoId}`);
-    const valor = parseFloat(input.value);
+    const valor = parseFloat(document.getElementById(`valor-${produtoId}`).value);
 
-    if (!valor) {
-        msg.innerHTML = 'Digite um valor válido';
-        return;
-    }
+    if (!valor) return;
 
-    try {
-        const response = await fetch(`${API_URL}/ofertas`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({
-                produto_id: produtoId,
-                valor: valor
-            })
-        });
+    const response = await fetch(`${API_URL}/ofertas`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+            produto_id: produtoId,
+            valor: valor
+        })
+    });
 
-        const data = await response.json();
-
-        if (response.ok) {
-            msg.innerHTML = data.mensagem;
-            carregarProdutos();
-        } else {
-            msg.innerHTML = data.detail || 'Erro ao enviar oferta';
-        }
-
-    } catch (e) {
-        msg.innerHTML = 'Erro na conexão';
-        console.error(e);
-    }
-}
-
-function filtrarPorCategoria(cat) {
-    categoriaAtual = cat;
-    aplicarFiltros();
+    const data = await response.json();
+    alert(data.mensagem || 'Resposta recebida');
 }
 
 function filtrarProdutos() {
@@ -160,9 +198,9 @@ function filtrarProdutos() {
     aplicarFiltros();
 }
 
-// 🚀 INICIALIZAÇÃO SEGURA
-window.onload = function () {
-    atualizarTopBar();
-    carregarProdutos();
-};
+atualizarTopBar();
+carregarProdutos();
 </script>
+
+</body>
+</html>
