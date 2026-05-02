@@ -67,52 +67,53 @@
     </div>
 
     <script>
-        const API_URL = 'https://aceitae-api.onrender.com';
+       
+    const API_URL = 'https://aceitae-api.onrender.com';
 
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const email = document.getElementById('email').value;
+        const senha = document.getElementById('senha').value;
+        const msgDiv = document.getElementById('mensagem');
+        
+        if (!email || !senha) {
+            msgDiv.className = 'mensagem erro';
+            msgDiv.innerHTML = '❌ Preencha todos os campos!';
+            return;
+        }
+        
+        try {
+            const response = await fetch(`${API_URL}/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, senha })
+            });
             
-            const email = document.getElementById('email').value;
-            const senha = document.getElementById('senha').value;
-            const msgDiv = document.getElementById('mensagem');
+            const data = await response.json();
             
-            if (!email || !senha) {
-                msgDiv.className = 'mensagem erro';
-                msgDiv.innerHTML = '❌ Preencha todos os campos!';
-                return;
-            }
-            
-            try {
-                const response = await fetch(`${API_URL}/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, senha })
-                });
+            if (response.ok) {
+                // SALVAR TOKEN E DADOS
+                localStorage.setItem('access_token', data.access_token);
+                localStorage.setItem('usuario_id', data.usuario_id);
+                localStorage.setItem('usuario_nome', data.nome);
                 
-                const data = await response.json();
+                msgDiv.className = 'mensagem sucesso';
+                msgDiv.innerHTML = `✅ Login realizado! Redirecionando...`;
                 
-                if (response.ok) {
-                    // SALVAR TOKEN E DADOS DO USUARIO
-                    localStorage.setItem('access_token', data.access_token);
-                    localStorage.setItem('usuario_id', data.usuario_id);
-                    localStorage.setItem('usuario_nome', data.nome);
-                    
-                    msgDiv.className = 'mensagem sucesso';
-                    msgDiv.innerHTML = `✅ ${data.mensagem || 'Login realizado'}! Redirecionando...`;
-                    
-                    setTimeout(() => {
-                        window.location.href = 'index.html';
-                    }, 1500);
-                } else {
-                    msgDiv.className = 'mensagem erro';
-                    msgDiv.innerHTML = `❌ ${data.detail || 'E-mail ou senha incorretos'}`;
-                }
-            } catch (error) {
-                console.error('Erro:', error);
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1500);
+            } else {
                 msgDiv.className = 'mensagem erro';
-                msgDiv.innerHTML = `❌ Erro de conexão: ${error.message}`;
+                msgDiv.innerHTML = `❌ ${data.detail || 'E-mail ou senha incorretos'}`;
             }
-        });
-    </script>
-</body>
+        } catch (error) {
+            console.error('Erro:', error);
+            msgDiv.className = 'mensagem erro';
+            msgDiv.innerHTML = `❌ Erro de conexão: ${error.message}`;
+        }
+    });
+</script>
+    </body>
 </html>
