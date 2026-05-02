@@ -1,113 +1,110 @@
-<!-- MANTIVE TODO SEU HTML ORIGINAL (CSS + estrutura intacta) -->
-<!-- SÓ ALTEREI O <script> -->
-
 <script>
-    const API_URL = 'https://aceitae-api.onrender.com';
+const API_URL = 'https://aceitae-api.onrender.com';
 
-    const token = localStorage.getItem('access_token');
-    const usuarioNome = localStorage.getItem('usuario_nome');
-    const usuarioTipo = localStorage.getItem('usuario_tipo');
+const token = localStorage.getItem('access_token');
+const usuarioNome = localStorage.getItem('usuario_nome');
+const usuarioTipo = localStorage.getItem('usuario_tipo');
 
-    if (usuarioTipo === 'vendedor') {
-        window.location.href = 'vendedor.html';
-    }
+if (usuarioTipo === 'vendedor') {
+    window.location.href = 'vendedor.html';
+}
 
-    let produtosOriginais = [];
-    let categoriaAtual = 'todos';
-    let termoBusca = '';
+let produtosOriginais = [];
+let categoriaAtual = 'todos';
+let termoBusca = '';
 
-    function atualizarTopBar() {
-        if (usuarioNome) {
-            const topBar = document.getElementById('topBar');
-            document.getElementById('btnCadastrar').style.display = 'none';
-            document.getElementById('btnEntrar').style.display = 'none';
+function atualizarTopBar() {
+    if (usuarioNome) {
+        const topBar = document.getElementById('topBar');
+        document.getElementById('btnCadastrar').style.display = 'none';
+        document.getElementById('btnEntrar').style.display = 'none';
 
-            if (!document.getElementById('userInfoDiv')) {
-                const userDiv = document.createElement('div');
-                userDiv.className = 'user-info';
+        if (!document.getElementById('userInfoDiv')) {
+            const userDiv = document.createElement('div');
+            userDiv.className = 'user-info';
 
-                userDiv.innerHTML = `
-                    <span><i class="fas fa-user-circle"></i> Olá, ${usuarioNome}</span>
-                    <a class="logout-btn" onclick="logout()">Sair</a>
-                `;
-
-                topBar.appendChild(userDiv);
-            }
-        }
-    }
-
-    function logout() {
-        localStorage.clear();
-        window.location.href = 'login.html';
-    }
-
-    async function carregarProdutos() {
-        try {
-            const response = await fetch(`${API_URL}/produtos?status=aprovado`);
-            const data = await response.json();
-
-            produtosOriginais = data.produtos || [];
-            aplicarFiltros();
-
-        } catch (error) {
-            document.getElementById('produtos').innerHTML = 'Erro ao carregar produtos';
-        }
-    }
-
-    function aplicarFiltros() {
-        let produtos = [...produtosOriginais];
-
-        if (categoriaAtual !== 'todos') {
-            produtos = produtos.filter(p => p.categoria === categoriaAtual);
-        }
-
-        if (termoBusca) {
-            produtos = produtos.filter(p =>
-                p.nome.toLowerCase().includes(termoBusca.toLowerCase())
-            );
-        }
-
-        document.getElementById('total-produtos').textContent = produtos.length;
-        renderizarProdutos(produtos);
-    }
-
-    function renderizarProdutos(produtos) {
-        const container = document.getElementById('produtos');
-
-        if (!produtos.length) {
-            container.innerHTML = 'Nenhum produto encontrado';
-            return;
-        }
-
-        container.innerHTML = '<div class="produtos-grid"></div>';
-        const grid = container.querySelector('.produtos-grid');
-
-        produtos.forEach(produto => {
-            const card = document.createElement('div');
-            card.className = 'produto-card';
-
-            card.innerHTML = `
-                <div class="produto-imagem">
-                    <i class="fas fa-box"></i>
-                </div>
-                <div class="produto-info">
-                    <h3>${produto.nome}</h3>
-                    <div class="categoria">${produto.categoria}</div>
-                    <div class="preco-exposicao">R$ ${produto.valor_exposicao}</div>
-
-                    <input type="number" id="valor-${produto.id}" placeholder="Sua oferta">
-                    <button onclick="fazerOferta(${produto.id})">Ofertar</button>
-
-                    <div id="msg-${produto.id}"></div>
-                </div>
+            userDiv.innerHTML = `
+                <span><i class="fas fa-user-circle"></i> Olá, ${usuarioNome}</span>
+                <a class="logout-btn" onclick="logout()">Sair</a>
             `;
 
-            grid.appendChild(card);
-        });
+            topBar.appendChild(userDiv);
+        }
+    }
+}
+
+function logout() {
+    localStorage.clear();
+    window.location.href = 'login.html';
+}
+
+async function carregarProdutos() {
+    try {
+        const response = await fetch(`${API_URL}/produtos?status=aprovado`);
+        const data = await response.json();
+
+        produtosOriginais = data.produtos || [];
+        aplicarFiltros();
+
+    } catch (error) {
+        document.getElementById('produtos').innerHTML = 'Erro ao carregar produtos';
+        console.error(error);
+    }
+}
+
+function aplicarFiltros() {
+    let produtos = [...produtosOriginais];
+
+    if (categoriaAtual !== 'todos') {
+        produtos = produtos.filter(p => p.categoria === categoriaAtual);
     }
 
-    async function fazerOferta(produtoId) {
+    if (termoBusca) {
+        produtos = produtos.filter(p =>
+            p.nome.toLowerCase().includes(termoBusca.toLowerCase())
+        );
+    }
 
+    document.getElementById('total-produtos').textContent = produtos.length;
+    renderizarProdutos(produtos);
+}
+
+function renderizarProdutos(produtos) {
+    const container = document.getElementById('produtos');
+
+    if (!produtos.length) {
+        container.innerHTML = 'Nenhum produto encontrado';
+        return;
+    }
+
+    container.innerHTML = '<div class="produtos-grid"></div>';
+    const grid = container.querySelector('.produtos-grid');
+
+    produtos.forEach(produto => {
+        const card = document.createElement('div');
+        card.className = 'produto-card';
+
+        card.innerHTML = `
+            <div class="produto-imagem">
+                <i class="fas fa-box"></i>
+            </div>
+            <div class="produto-info">
+                <h3>${produto.nome}</h3>
+                <div class="categoria">${produto.categoria}</div>
+                <div class="preco-exposicao">R$ ${produto.valor_exposicao}</div>
+
+                <input type="number" id="valor-${produto.id}" placeholder="Sua oferta">
+                <button onclick="fazerOferta(${produto.id})">Ofertar</button>
+
+                <div id="msg-${produto.id}"></div>
+            </div>
+        `;
+
+        grid.appendChild(card);
+    });
+}
+
+async function fazerOferta(produtoId) {
     const token = localStorage.getItem('access_token');
 
     if (!token) {
@@ -117,62 +114,55 @@
     }
 
     const input = document.getElementById(`valor-${produtoId}`);
+    const msg = document.getElementById(`msg-${produtoId}`);
     const valor = parseFloat(input.value);
 
-    if (!valor) return;
+    if (!valor) {
+        msg.innerHTML = 'Digite um valor válido';
+        return;
+    }
 
-    const response = await fetch(`${API_URL}/ofertas`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}` // 🔥 ESSENCIAL
-        },
-        body: JSON.stringify({
-            produto_id: produtoId,
-            valor: valor
-        })
-    });
+    try {
+        const response = await fetch(`${API_URL}/ofertas`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                produto_id: produtoId,
+                valor: valor
+            })
+        });
 
-    const data = await response.json();
-    alert(JSON.stringify(data));
-}
-        try {
-            const response = await fetch(`${API_URL}/ofertas`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    produto_id: produtoId,
-                    valor: valor
-                })
-            });
+        const data = await response.json();
 
-            const data = await response.json();
-
-            if (response.ok) {
-                msg.innerHTML = data.mensagem;
-                carregarProdutos();
-            } else {
-                msg.innerHTML = data.detail;
-            }
-
-        } catch (e) {
-            msg.innerHTML = 'Erro na conexão';
+        if (response.ok) {
+            msg.innerHTML = data.mensagem;
+            carregarProdutos();
+        } else {
+            msg.innerHTML = data.detail || 'Erro ao enviar oferta';
         }
-    }
 
-    function filtrarPorCategoria(cat) {
-        categoriaAtual = cat;
-        aplicarFiltros();
+    } catch (e) {
+        msg.innerHTML = 'Erro na conexão';
+        console.error(e);
     }
+}
 
-    function filtrarProdutos() {
-        termoBusca = document.getElementById('searchInput').value;
-        aplicarFiltros();
-    }
+function filtrarPorCategoria(cat) {
+    categoriaAtual = cat;
+    aplicarFiltros();
+}
 
+function filtrarProdutos() {
+    termoBusca = document.getElementById('searchInput').value;
+    aplicarFiltros();
+}
+
+// 🚀 INICIALIZAÇÃO SEGURA
+window.onload = function () {
     atualizarTopBar();
     carregarProdutos();
+};
 </script>
