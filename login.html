@@ -6,9 +6,14 @@
     <title>ACEITAÊ - Login</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: linear-gradient(135deg, #1A237E 0%, #283593 100%);
             min-height: 100vh;
             display: flex;
@@ -16,23 +21,112 @@
             align-items: center;
             padding: 20px;
         }
-        .container { max-width: 450px; width: 100%; }
-        .card { background: white; border-radius: 20px; padding: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
-        .logo { text-align: center; margin-bottom: 30px; }
-        .logo h1 { font-size: 32px; color: #1A237E; }
-        .logo h1 span { color: #00C853; }
-        .logo p { color: #666; font-size: 14px; margin-top: 5px; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; color: #333; font-weight: 500; }
-        input { width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 16px; transition: all 0.3s; }
-        input:focus { outline: none; border-color: #00C853; }
-        .btn-login { width: 100%; padding: 14px; background: #00C853; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .btn-login:hover { background: #00A844; }
-        .cadastro-link { text-align: center; margin-top: 20px; color: #666; }
-        .cadastro-link a { color: #1A237E; text-decoration: none; font-weight: bold; }
-        .mensagem { margin-top: 15px; padding: 12px; border-radius: 8px; display: none; }
-        .mensagem.sucesso { background: #e8f5e9; color: #2e7d32; display: block; }
-        .mensagem.erro { background: #ffebee; color: #c62828; display: block; }
+
+        .container {
+            max-width: 450px;
+            width: 100%;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            font-size: 32px;
+            color: #1A237E;
+        }
+
+        .logo h1 span {
+            color: #00C853;
+        }
+
+        .logo p {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #00C853;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background: #00C853;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-login:hover {
+            background: #00A844;
+        }
+
+        .cadastro-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+
+        .cadastro-link a {
+            color: #1A237E;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .mensagem {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .mensagem.sucesso {
+            background: #e8f5e9;
+            color: #2e7d32;
+            display: block;
+        }
+
+        .mensagem.erro {
+            background: #ffebee;
+            color: #c62828;
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -46,12 +140,12 @@
             <form id="loginForm">
                 <div class="form-group">
                     <label>E-mail</label>
-                    <input type="email" id="email" required>
+                    <input type="email" id="email" required autocomplete="email">
                 </div>
 
                 <div class="form-group">
                     <label>Senha</label>
-                    <input type="password" id="senha" required>
+                    <input type="password" id="senha" required autocomplete="current-password">
                 </div>
 
                 <button type="submit" class="btn-login">
@@ -67,42 +161,48 @@
     </div>
 
     <script>
-        const API_URL = 'https://aceitae-api-v2.onrender.com';
+        const API_URL = 'http://127.0.0.1:3000';
 
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-
+            
             const email = document.getElementById('email').value;
             const senha = document.getElementById('senha').value;
             const msgDiv = document.getElementById('mensagem');
-
+            
             if (!email || !senha) {
                 msgDiv.className = 'mensagem erro';
                 msgDiv.innerHTML = '❌ Preencha todos os campos!';
                 return;
             }
-
+            
             try {
                 const response = await fetch(`${API_URL}/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, senha })
                 });
-
+                
                 const data = await response.json();
-
+                
                 if (response.ok) {
-                    // Salvar token e dados do usuário
-                    localStorage.setItem('access_token', data.access_token);
+                    // SALVAR TODOS OS DADOS DO USUARIO
                     localStorage.setItem('usuario_id', data.usuario_id);
                     localStorage.setItem('usuario_nome', data.nome);
                     localStorage.setItem('usuario_tipo', data.tipo);
-
+                    localStorage.setItem('usuario_email', email);
+                    
+                    console.log('Dados salvos:', {
+                        id: data.usuario_id,
+                        nome: data.nome,
+                        tipo: data.tipo
+                    });
+                    
                     msgDiv.className = 'mensagem sucesso';
-                    msgDiv.innerHTML = `✅ ${data.mensagem || 'Login realizado'}! Redirecionando...`;
-
+                    msgDiv.innerHTML = `✅ ${data.mensagem}! Redirecionando...`;
+                    
                     setTimeout(() => {
-                        if (data.tipo === 'vendedor') {
+                        if (data.tipo === 'vendedor' || data.tipo === 'ambos') {
                             window.location.href = 'vendedor.html';
                         } else {
                             window.location.href = 'index.html';
