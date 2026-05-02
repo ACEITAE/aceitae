@@ -292,6 +292,15 @@ def fazer_oferta(oferta: OfertaCadastro, user_id: int = Depends(get_usuario_loga
         "oferta_id": result.data[0]["id"]
     }
 
+==================================================
+# LISTAR OFERTAS (ADICIONE AQUI)
+# ==================================================
+@app.get("/ofertas")
+def listar_ofertas(user_id: int = Depends(get_usuario_logado)):
+    result = supabase.table("ofertas").select("*").execute()
+    return {"ofertas": result.data}
+
+
 # ==================================================
 # HEALTH
 # ==================================================
