@@ -10,7 +10,7 @@ from jose import jwt
 from supabase_config import supabase
 import uuid
 
-SECRET_KEY = "ACEITAÊ2026@SuperSeguro"
+SECRET_KEY = "VKR1vkr#vkr"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
