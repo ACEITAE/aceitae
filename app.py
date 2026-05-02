@@ -1,30 +1,21 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, File, UploadFile, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime, timedelta
 from passlib.context import CryptContext
-from jose import jwt, JWTError
-import os
+from jose import jwt
+from supabase_config import supabase
+import uuid
 
-# ==================================================
-# CONFIG
-# ==================================================
-
-SECRET_KEY = os.getenv("SECRET_KEY", "dev_secret")
+# ================= CONFIG =================
+SECRET_KEY = "MUDE_ISSO_NO_RENDER"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
-app = FastAPI(
-    title="ACEITAÊ API",
-    version="2.0.0"
-)
+app = FastAPI(title="ACEITAÊ API", version="4.0.0")
 
-# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -33,21 +24,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ==================================================
-# BANCO (MEMÓRIA)
-# ==================================================
-
-usuarios_db = []
-produtos_db = []
-ofertas_db = []
-
-contador_usuario = 1
-contador_produto = 1
-contador_oferta = 1
-
-# ==================================================
-# SEGURANÇA
-# ==================================================
+# ================= AUTH =================
 
 def hash_senha(senha):
     return pwd_context.hash(senha)
@@ -55,22 +32,27 @@ def hash_senha(senha):
 def verificar_senha(senha, hash):
     return pwd_context.verify(senha, hash)
 
-def criar_token(data: dict):
-    to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+def criar_token(user_id, nome):
+    payload = {
+        "sub": str(user_id),
+        "nome": nome,
+        "exp": datetime.utcnow() + timedelta(hours=2)
+    }
+    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
-def get_usuario_logado(token: str = Depends(oauth2_scheme)):
+def get_user_id(authorization: str = Header(None)):
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Token não enviado")
+
+    token = authorization.replace("Bearer ", "")
+
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        return int(payload.get("sub"))
+        return int(payload["sub"])
     except:
         raise HTTPException(status_code=401, detail="Token inválido")
 
-# ==================================================
-# MODELOS
-# ==================================================
+# ================= MODELOS =================
 
 class UsuarioCadastro(BaseModel):
     nome: str
@@ -98,172 +80,113 @@ class LoginData(BaseModel):
     email: str
     senha: str
 
-# ==================================================
-# CADASTRO
-# ==================================================
+# ================= CADASTRO =================
 
 @app.post("/cadastrar")
 def cadastrar(usuario: UsuarioCadastro):
-    global contador_usuario
+    existing = supabase.table("usuarios").select("*").eq("email", usuario.email).execute()
 
-    for u in usuarios_db:
-        if u["email"] == usuario.email:
-            raise HTTPException(status_code=400, detail="E-mail já cadastrado")
+    if existing.data:
+        raise HTTPException(400, "E-mail já cadastrado")
 
-    if usuario.tipo == "vendedor" and not usuario.cpf:
-        raise HTTPException(status_code=400, detail="CPF obrigatório")
+    data = usuario.dict()
+    data["senha"] = hash_senha(usuario.senha)
 
-    novo_usuario = {
-        "id": contador_usuario,
-        "nome": usuario.nome,
-        "email": usuario.email,
-        "telefone": usuario.telefone,
-        "tipo": usuario.tipo,
-        "senha": hash_senha(usuario.senha),
-        "cpf": usuario.cpf,
-        "pix": usuario.pix,
-        "endereco": usuario.endereco
-    }
+    result = supabase.table("usuarios").insert(data).execute()
 
-    usuarios_db.append(novo_usuario)
-    contador_usuario += 1
+    return {"usuario_id": result.data[0]["id"]}
 
-    return {"mensagem": "Cadastro realizado!", "usuario_id": novo_usuario["id"]}
-
-# ==================================================
-# LOGIN
-# ==================================================
+# ================= LOGIN =================
 
 @app.post("/login")
 def login(usuario: LoginData):
-    for u in usuarios_db:
-        if u["email"] == usuario.email:
-            if verificar_senha(usuario.senha, u["senha"]):
-                token = criar_token({
-                    "sub": str(u["id"]),
-                    "nome": u["nome"]
-                })
+    result = supabase.table("usuarios").select("*").eq("email", usuario.email).execute()
 
-                return {
-                    "access_token": token,
-                    "token_type": "bearer",
-                    "usuario_id": u["id"],
-                    "nome": u["nome"],
-                    "tipo": u["tipo"]
-                }
+    if not result.data:
+        raise HTTPException(401, "Usuário não encontrado")
 
-    raise HTTPException(status_code=401, detail="Credenciais inválidas")
+    user = result.data[0]
 
-# ==================================================
-# CRIAR PRODUTO (PROTEGIDO)
-# ==================================================
+    if not verificar_senha(usuario.senha, user["senha"]):
+        raise HTTPException(401, "Senha incorreta")
+
+    token = criar_token(user["id"], user["nome"])
+
+    return {
+        "access_token": token,
+        "usuario_id": user["id"],
+        "nome": user["nome"],
+        "tipo": user["tipo"]
+    }
+
+# ================= PRODUTOS =================
 
 @app.post("/produtos")
-def criar_produto(produto: ProdutoCadastro, user_id: int = Depends(get_usuario_logado)):
-    global contador_produto
+def criar_produto(produto: ProdutoCadastro, user_id: int = Depends(get_user_id)):
 
-    vendedor = next((u for u in usuarios_db if u["id"] == user_id), None)
+    vendedor = supabase.table("usuarios").select("*").eq("id", user_id).execute()
 
-    if not vendedor:
-        raise HTTPException(status_code=404, detail="Usuário não encontrado")
+    if not vendedor.data:
+        raise HTTPException(404, "Usuário não encontrado")
 
     valor_exposicao = round(produto.valor_pretendido * 1.10, 2)
 
-    novo_produto = {
-        "id": contador_produto,
+    novo = {
         "vendedor_id": user_id,
-        "vendedor_nome": vendedor["nome"],
+        "vendedor_nome": vendedor.data[0]["nome"],
         "nome": produto.nome,
         "descricao": produto.descricao,
         "categoria": produto.categoria,
         "valor_pretendido": produto.valor_pretendido,
         "valor_exposicao": valor_exposicao,
-        "status": "aguardando_vistoria",
-        "fotos": produto.fotos or [],
-        "video": produto.video,
-        "criado_em": datetime.now().strftime("%d/%m/%Y %H:%M")
+        "status": "aprovado"
     }
 
-    produtos_db.append(novo_produto)
-    contador_produto += 1
+    result = supabase.table("produtos").insert(novo).execute()
 
-    return {"produto_id": novo_produto["id"]}
+    return result.data[0]
 
-# ==================================================
-# LISTAR PRODUTOS
-# ==================================================
+# ================= LISTAR =================
 
 @app.get("/produtos")
-def listar_produtos(status: str = None):
-    produtos = [p for p in produtos_db if status is None or p["status"] == status]
-    return {"produtos": produtos}
+def listar_produtos():
+    result = supabase.table("produtos").select("*").execute()
+    return {"produtos": result.data}
 
-# ==================================================
-# APROVAR PRODUTO
-# ==================================================
-
-@app.put("/produtos/{produto_id}/aprovar")
-def aprovar_produto(produto_id: int):
-    for p in produtos_db:
-        if p["id"] == produto_id:
-            p["status"] = "aprovado"
-            return {"mensagem": "Produto aprovado"}
-
-    raise HTTPException(status_code=404, detail="Produto não encontrado")
-
-# ==================================================
-# FAZER OFERTA (PROTEGIDO)
-# ==================================================
+# ================= OFERTA =================
 
 @app.post("/ofertas")
-def fazer_oferta(oferta: OfertaCadastro, user_id: int = Depends(get_usuario_logado)):
-    global contador_oferta
+def oferta(oferta: OfertaCadastro, user_id: int = Depends(get_user_id)):
 
-    produto = next((p for p in produtos_db if p["id"] == oferta.produto_id), None)
+    produto = supabase.table("produtos").select("*").eq("id", oferta.produto_id).execute()
 
-    if not produto:
-        raise HTTPException(status_code=404, detail="Produto não encontrado")
+    if not produto.data:
+        raise HTTPException(404, "Produto não encontrado")
+
+    produto = produto.data[0]
 
     if produto["status"] == "vendido":
-        raise HTTPException(status_code=400, detail="Produto já vendido")
+        raise HTTPException(400, "Produto já vendido")
 
-    if produto["status"] != "aprovado":
-        raise HTTPException(status_code=400, detail="Produto indisponível")
-
-    valor_oferta = oferta.valor
-    valor_pretendido = produto["valor_pretendido"]
-
-    if valor_oferta >= valor_pretendido:
-        produto["status"] = "vendido"
+    if oferta.valor >= produto["valor_pretendido"]:
+        supabase.table("produtos").update({"status": "vendido"}).eq("id", produto["id"]).execute()
         status_oferta = "venda_automatica"
-        mensagem = "Venda automática realizada!"
     else:
         status_oferta = "pendente"
-        mensagem = "Oferta enviada!"
 
-    nova_oferta = {
-        "id": contador_oferta,
+    nova = {
         "produto_id": produto["id"],
         "comprador_id": user_id,
-        "valor": valor_oferta,
-        "status": status_oferta,
-        "condicional": valor_oferta < valor_pretendido,
-        "criado_em": datetime.now().strftime("%d/%m/%Y %H:%M")
+        "valor": oferta.valor,
+        "status": status_oferta
     }
 
-    ofertas_db.append(nova_oferta)
-    contador_oferta += 1
+    result = supabase.table("ofertas").insert(nova).execute()
 
-    return {"mensagem": mensagem, "status": status_oferta}
+    return {"status": status_oferta}
 
-# ==================================================
-# ROOT
-# ==================================================
+# ================= ROOT =================
 
 @app.get("/")
 def root():
-    return {"mensagem": "ACEITAÊ rodando 🚀"}
-
-@app.get("/health")
-def health():
-    return {"status": "online"}
+    return {"msg": "ACEITAÊ online 🚀"}
