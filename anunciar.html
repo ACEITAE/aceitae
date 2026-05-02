@@ -1,174 +1,499 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ACEITAÊ - Anunciar Produto</title>
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-<style>
-body {
-    font-family: Arial;
-    background: linear-gradient(135deg,#1A237E,#283593);
-    color:#333;
-}
-
-.container {
-    max-width: 600px;
-    margin: auto;
-    padding:20px;
-}
-
-.card {
-    background:white;
-    padding:30px;
-    border-radius:15px;
-}
-
-input, textarea {
-    width:100%;
-    padding:10px;
-    margin-bottom:15px;
-    border-radius:8px;
-    border:1px solid #ccc;
-}
-
-button {
-    width:100%;
-    padding:12px;
-    background:#00C853;
-    color:white;
-    border:none;
-    border-radius:8px;
-    font-weight:bold;
-    cursor:pointer;
-}
-
-.preview img {
-    width:80px;
-    margin:5px;
-    border-radius:5px;
-}
-</style>
-</head>
-
-<body>
-
-<div class="container">
-<div class="card">
-
-<h2>Anunciar Produto</h2>
-
-<form id="form">
-
-<input type="text" id="nome" placeholder="Nome do produto" required>
-<textarea id="descricao" placeholder="Descrição" required></textarea>
-
-<input type="text" id="categoria" placeholder="Categoria" required>
-<input type="number" id="valor" placeholder="Valor pretendido" required>
-
-<input type="file" id="fotos" multiple>
-
-<div class="preview" id="preview"></div>
-
-<button type="submit">Anunciar</button>
-
-</form>
-
-<div id="msg"></div>
-
-</div>
-</div>
-
-<script>
-const API = "https://aceitae-api-v2.onrender.com";
-const token = localStorage.getItem("access_token");
-
-if(!token){
-    alert("Faça login primeiro");
-    window.location.href = "login.html";
-}
-
-// preview imagens
-document.getElementById("fotos").addEventListener("change", e=>{
-    const preview = document.getElementById("preview");
-    preview.innerHTML = "";
-    Array.from(e.target.files).forEach(file=>{
-        const img = document.createElement("img");
-        img.src = URL.createObjectURL(file);
-        preview.appendChild(img);
-    });
-});
-
-// upload imagem
-async function upload(file){
-    const formData = new FormData();
-    formData.append("arquivo", file);
-
-    const res = await fetch(API + "/upload-foto",{
-        method:"POST",
-        headers:{
-            "Authorization":"Bearer "+token
-        },
-        body:formData
-    });
-
-    const data = await res.json();
-
-    if(!res.ok) throw new Error(data.detail);
-
-    return data.url;
-}
-
-// submit
-document.getElementById("form").addEventListener("submit", async e=>{
-    e.preventDefault();
-
-    const msg = document.getElementById("msg");
-    msg.innerHTML = "Enviando...";
-
-    try{
-        const files = document.getElementById("fotos").files;
-
-        let urls = [];
-
-        for(let f of files){
-            const url = await upload(f);
-            urls.push(url);
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACEITAÊ - Anunciar Produto</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        const body = {
-            nome: document.getElementById("nome").value,
-            descricao: document.getElementById("descricao").value,
-            categoria: document.getElementById("categoria").value,
-            valor_pretendido: parseFloat(document.getElementById("valor").value),
-            fotos: urls
-        };
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #1A237E 0%, #283593 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
 
-        const res = await fetch(API + "/produtos",{
-            method:"POST",
-            headers:{
-                "Content-Type":"application/json",
-                "Authorization":"Bearer "+token
-            },
-            body: JSON.stringify(body)
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-text {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1A237E;
+        }
+
+        .logo-text span {
+            color: #00C853;
+        }
+
+        .header p {
+            color: #666;
+            margin-top: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #00C853;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .categoria-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .categoria-btn {
+            padding: 10px 20px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .categoria-btn.active {
+            background: #00C853;
+            color: white;
+            border-color: #00C853;
+        }
+
+        .categoria-btn:hover {
+            border-color: #00C853;
+        }
+
+        .foto-area {
+            border: 2px dashed #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .foto-area:hover {
+            border-color: #00C853;
+        }
+
+        .foto-area i {
+            font-size: 48px;
+            color: #999;
+            margin-bottom: 10px;
+        }
+
+        .foto-area p {
+            color: #999;
+            font-size: 14px;
+        }
+
+        .preview-fotos {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .preview-img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .upload-status {
+            font-size: 12px;
+            margin-top: 8px;
+            color: #666;
+        }
+
+        .btn-anunciar {
+            width: 100%;
+            padding: 14px;
+            background: #00C853;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 20px;
+        }
+
+        .btn-anunciar:hover {
+            background: #00A844;
+        }
+
+        .btn-anunciar:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #666;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            color: #00C853;
+        }
+
+        .mensagem {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .mensagem.sucesso {
+            background: #e8f5e9;
+            color: #2e7d32;
+            display: block;
+        }
+
+        .mensagem.erro {
+            background: #ffebee;
+            color: #c62828;
+            display: block;
+        }
+
+        .user-info {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .user-name {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: white;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background 0.3s;
+            color: white;
+            text-decoration: none;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        small {
+            font-size: 11px;
+            color: #999;
+            display: block;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Topo com info do usuario -->
+        <div class="user-info" id="userInfo"></div>
+
+        <div class="card">
+            <div class="header">
+                <div class="logo-text">ACEIT<span>AÊ</span></div>
+                <p>Anuncie seu produto <strong>gratuitamente</strong></p>
+                <p style="font-size: 12px;">Você só paga 10% de comissão quando vender!</p>
+            </div>
+
+            <form id="anunciarForm">
+                <div class="form-group">
+                    <label>Nome do produto *</label>
+                    <input type="text" id="nome" placeholder="Ex: iPhone 13 128GB Azul" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Descrição *</label>
+                    <textarea id="descricao" placeholder="Descreva o produto, estado de conservação, avarias, etc." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Categoria *</label>
+                    <div class="categoria-group" id="categoriaGroup">
+                        <button type="button" class="categoria-btn" data-cat="Eletrônicos">📱 Eletrônicos</button>
+                        <button type="button" class="categoria-btn" data-cat="Moda">👕 Moda</button>
+                        <button type="button" class="categoria-btn" data-cat="Casa">🏠 Casa</button>
+                        <button type="button" class="categoria-btn" data-cat="Esporte">⚽ Esporte</button>
+                        <button type="button" class="categoria-btn" data-cat="Outros">📦 Outros</button>
+                    </div>
+                    <input type="hidden" id="categoria" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Valor pretendido *</label>
+                    <input type="number" id="valorPretendido" placeholder="R$ 0,00" step="0.01" required>
+                    <small>Este é o valor mínimo que você quer receber. Anunciaremos com 10% a mais.</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Fotos do produto *</label>
+                    <div class="foto-area" id="fotoArea">
+                        <i class="fas fa-camera"></i>
+                        <p>Clique para adicionar fotos</p>
+                        <input type="file" id="fotosInput" multiple accept="image/*" style="display: none;">
+                    </div>
+                    <div id="previewFotos" class="preview-fotos"></div>
+                    <div id="uploadStatus" class="upload-status"></div>
+                    <small>Adicione pelo menos uma foto do produto</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Vídeo (opcional)</label>
+                    <input type="url" id="video" placeholder="Link do vídeo (YouTube, Google Drive, etc.)">
+                </div>
+
+                <button type="submit" class="btn-anunciar" id="btnAnunciar">
+                    <i class="fas fa-plus-circle"></i> Anunciar Grátis
+                </button>
+            </form>
+
+            <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Voltar para loja</a>
+            <div id="mensagem" class="mensagem"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://aceitae-api.onrender.com';
+        
+        // Verificar usuario logado
+        const usuarioId = localStorage.getItem('usuario_id');
+        const usuarioNome = localStorage.getItem('usuario_nome');
+        const usuarioTipo = localStorage.getItem('usuario_tipo');
+        
+        if (!usuarioId) {
+            alert('Você precisa estar logado para anunciar!');
+            window.location.href = 'login.html';
+        }
+        
+        if (usuarioTipo !== 'vendedor' && usuarioTipo !== 'ambos') {
+            alert('Apenas vendedores podem anunciar produtos!');
+            window.location.href = 'index.html';
+        }
+        
+        document.getElementById('userInfo').innerHTML = `
+            <span class="user-name"><i class="fas fa-user-circle"></i> Olá, ${usuarioNome}</span>
+            <a href="vendedor.html" class="logout-btn"><i class="fas fa-store"></i> Meu Painel</a>
+            <span class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Sair</span>
+        `;
+        
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+        
+        // Categorias
+        let categoriaSelecionada = '';
+        document.querySelectorAll('.categoria-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.categoria-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                categoriaSelecionada = this.getAttribute('data-cat');
+                document.getElementById('categoria').value = categoriaSelecionada;
+            });
+        });
+        
+        // Upload de fotos
+        const fotoArea = document.getElementById('fotoArea');
+        const fotosInput = document.getElementById('fotosInput');
+        const previewFotos = document.getElementById('previewFotos');
+        const uploadStatus = document.getElementById('uploadStatus');
+        let fotosUrls = [];
+        let enviandoFotos = false;
+
+        fotoArea.addEventListener('click', () => {
+            fotosInput.click();
         });
 
-        const data = await res.json();
-
-        if(res.ok){
-            msg.innerHTML = "✅ Produto criado!";
-            setTimeout(()=> window.location.href="vendedor.html",1500);
-        } else {
-            msg.innerHTML = "❌ " + data.detail;
+        async function fazerUploadFoto(file) {
+            const formData = new FormData();
+            formData.append('arquivo', file);
+            
+            try {
+                const response = await fetch(`${API_URL}/upload-foto`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    return data.url;
+                } else {
+                    throw new Error(data.detail || 'Erro no upload');
+                }
+            } catch (error) {
+                throw new Error(error.message);
+            }
         }
 
-    } catch(err){
-        msg.innerHTML = "Erro: " + err.message;
-    }
-});
-</script>
+        fotosInput.addEventListener('change', async (e) => {
+            const files = Array.from(e.target.files);
+            const btnAnunciar = document.getElementById('btnAnunciar');
+            
+            if (files.length === 0) return;
+            
+            enviandoFotos = true;
+            btnAnunciar.disabled = true;
+            uploadStatus.innerHTML = '⏳ Enviando fotos... Aguarde';
+            uploadStatus.style.color = '#f57f17';
+            
+            for (const file of files) {
+                try {
+                    const url = await fazerUploadFoto(file);
+                    fotosUrls.push(url);
+                    atualizarPreview();
+                    uploadStatus.innerHTML = `✅ ${fotosUrls.length} foto(s) enviada(s)`;
+                    uploadStatus.style.color = '#2e7d32';
+                } catch (error) {
+                    uploadStatus.innerHTML = `❌ Erro ao enviar: ${error.message}`;
+                    uploadStatus.style.color = '#c62828';
+                    console.error('Erro no upload:', error);
+                }
+            }
+            
+            enviandoFotos = false;
+            btnAnunciar.disabled = false;
+            
+            if (fotosUrls.length === 0) {
+                uploadStatus.innerHTML = '❌ Nenhuma foto foi enviada. Tente novamente.';
+                uploadStatus.style.color = '#c62828';
+            }
+        });
 
+        function atualizarPreview() {
+            previewFotos.innerHTML = '';
+            fotosUrls.forEach((url, index) => {
+                const img = document.createElement('img');
+                img.src = url;
+                img.className = 'preview-img';
+                previewFotos.appendChild(img);
+            });
+        }
+        
+        // Enviar anuncio
+        document.getElementById('anunciarForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const nome = document.getElementById('nome').value;
+            const descricao = document.getElementById('descricao').value;
+            const categoria = document.getElementById('categoria').value;
+            const valorPretendido = parseFloat(document.getElementById('valorPretendido').value);
+            const video = document.getElementById('video').value;
+            
+            if (!nome || !descricao || !categoria || !valorPretendido) {
+                alert('Preencha todos os campos obrigatórios!');
+                return;
+            }
+            
+            if (fotosUrls.length === 0) {
+                alert('Adicione pelo menos uma foto do produto!');
+                return;
+            }
+            
+            const msgDiv = document.getElementById('mensagem');
+            const btnAnunciar = document.getElementById('btnAnunciar');
+            
+            const dados = {
+                nome: nome,
+                descricao: descricao,
+                categoria: categoria,
+                valor_pretendido: valorPretendido,
+                fotos: fotosUrls,
+                video: video || null
+            };
+            
+            btnAnunciar.disabled = true;
+            btnAnunciar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+            
+            try {
+                const response = await fetch(`${API_URL}/produtos?vendedor_id=${usuarioId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dados)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    msgDiv.className = 'mensagem sucesso';
+                    msgDiv.innerHTML = `✅ ${data.mensagem}! Aguarde a aprovação da vistoria. Redirecionando...`;
+                    
+                    setTimeout(() => {
+                        window.location.href = 'vendedor.html';
+                    }, 3000);
+                } else {
+                    msgDiv.className = 'mensagem erro';
+                    msgDiv.innerHTML = `❌ ${data.detail || 'Erro ao anunciar produto'}`;
+                    btnAnunciar.disabled = false;
+                    btnAnunciar.innerHTML = '<i class="fas fa-plus-circle"></i> Anunciar Grátis';
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                msgDiv.className = 'mensagem erro';
+                msgDiv.innerHTML = `❌ Erro de conexão: ${error.message}`;
+                btnAnunciar.disabled = false;
+                btnAnunciar.innerHTML = '<i class="fas fa-plus-circle"></i> Anunciar Grátis';
+            }
+        });
+    </script>
 </body>
 </html>
