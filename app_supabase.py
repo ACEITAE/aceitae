@@ -8,34 +8,32 @@ from passlib.context import CryptContext
 from jose import jwt
 from supabase_config import supabase
 import uuid
-import os
 
 # ==================================================
-# CONFIGURAÇÕES SEGURAS
+# CONFIG
 # ==================================================
 
-SECRET_KEY = os.getenv("SECRET_KEY", "dev_secret")
+SECRET_KEY = "SUA_CHAVE_SUPER_SECRETA"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
-app = FastAPI(title="ACEITAÊ API", version="3.1.0")
+app = FastAPI(title="ACEITAÊ API", version="3.0.0")
 
 # ==================================================
-# CORS (AJUSTADO PRA PRODUÇÃO + TESTE)
+# CORS
 # ==================================================
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://aceitae.com",
         "https://www.aceitae.com",
+        "https://aceitae.com",
         "https://aceitae.vercel.app",
         "http://localhost:3000",
-        "http://127.0.0.1:3000",
-        "*"  # 🔥 remove depois se quiser segurança máxima
+        "http://127.0.0.1:3000"
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -49,22 +47,19 @@ app.add_middleware(
 def hash_senha(senha):
     return pwd_context.hash(senha)
 
-def verificar_senha(senha, senha_hash):
-    return pwd_context.verify(senha, senha_hash)
+def verificar_senha(senha, hash):
+    return pwd_context.verify(senha, hash)
 
 def criar_token(data: dict):
-    payload = data.copy()
+    to_encode = data.copy()
     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    payload.update({"exp": expire})
-    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 def get_usuario_logado(token: str = Depends(oauth2_scheme)):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id = payload.get("sub")
-        if not user_id:
-            raise HTTPException(status_code=401, detail="Token inválido")
-        return int(user_id)
+        return int(payload.get("sub"))
     except:
         raise HTTPException(status_code=401, detail="Token inválido")
 
@@ -82,6 +77,10 @@ class UsuarioCadastro(BaseModel):
     pix: Optional[str] = None
     endereco: Optional[str] = None
 
+class LoginData(BaseModel):
+    email: str
+    senha: str
+
 class ProdutoCadastro(BaseModel):
     nome: str
     descricao: str
@@ -94,24 +93,16 @@ class OfertaCadastro(BaseModel):
     produto_id: int
     valor: float
 
-class LoginData(BaseModel):
-    email: str
-    senha: str
-
 # ==================================================
 # CADASTRO
 # ==================================================
 
 @app.post("/cadastrar")
 def cadastrar(usuario: UsuarioCadastro):
+    existing = supabase.table("usuarios").select("*").eq("email", usuario.email).execute()
 
-    existente = supabase.table("usuarios").select("id").eq("email", usuario.email).execute()
-
-    if existente.data:
+    if existing.data:
         raise HTTPException(status_code=400, detail="E-mail já cadastrado")
-
-    if usuario.tipo == "vendedor" and not usuario.cpf:
-        raise HTTPException(status_code=400, detail="CPF obrigatório para vendedor")
 
     data = usuario.dict()
     data["senha"] = hash_senha(usuario.senha)
@@ -120,8 +111,7 @@ def cadastrar(usuario: UsuarioCadastro):
 
     return {
         "mensagem": "Cadastro realizado!",
-        "usuario_id": result.data[0]["id"],
-        "nome": result.data[0]["nome"]
+        "usuario_id": result.data[0]["id"]
     }
 
 # ==================================================
@@ -130,7 +120,6 @@ def cadastrar(usuario: UsuarioCadastro):
 
 @app.post("/login")
 def login(usuario: LoginData):
-
     result = supabase.table("usuarios").select("*").eq("email", usuario.email).execute()
 
     if not result.data:
@@ -151,7 +140,7 @@ def login(usuario: LoginData):
         "token_type": "bearer",
         "usuario_id": user["id"],
         "nome": user["nome"],
-        "tipo": user["tipo"]
+        "tipo": user["tipo"]  # IMPORTANTE
     }
 
 # ==================================================
@@ -160,17 +149,15 @@ def login(usuario: LoginData):
 
 @app.post("/upload-foto")
 async def upload_foto(arquivo: UploadFile = File(...)):
-
     if arquivo.content_type not in ["image/jpeg", "image/png"]:
         raise HTTPException(status_code=400, detail="Formato inválido")
 
     conteudo = await arquivo.read()
 
     if len(conteudo) > 5 * 1024 * 1024:
-        raise HTTPException(status_code=400, detail="Arquivo muito grande (max 5MB)")
+        raise HTTPException(status_code=400, detail="Arquivo muito grande")
 
-    extensao = arquivo.filename.split(".")[-1]
-    nome_arquivo = f"{uuid.uuid4()}.{extensao}"
+    nome_arquivo = f"{uuid.uuid4()}.jpg"
 
     supabase.storage.from_("produtos").upload(
         nome_arquivo,
@@ -183,7 +170,7 @@ async def upload_foto(arquivo: UploadFile = File(...)):
     return {"url": url}
 
 # ==================================================
-# CRIAR PRODUTO
+# PRODUTOS
 # ==================================================
 
 @app.post("/produtos")
@@ -196,7 +183,7 @@ def criar_produto(produto: ProdutoCadastro, user_id: int = Depends(get_usuario_l
 
     valor_exposicao = round(produto.valor_pretendido * 1.10, 2)
 
-    novo = {
+    novo_produto = {
         "vendedor_id": user_id,
         "vendedor_nome": vendedor.data[0]["nome"],
         "nome": produto.nome,
@@ -206,40 +193,28 @@ def criar_produto(produto: ProdutoCadastro, user_id: int = Depends(get_usuario_l
         "valor_exposicao": valor_exposicao,
         "status": "aguardando_vistoria",
         "fotos": produto.fotos or [],
-        "video": produto.video,
-        "criado_em": datetime.utcnow().isoformat()
+        "video": produto.video
     }
 
-    result = supabase.table("produtos").insert(novo).execute()
+    result = supabase.table("produtos").insert(novo_produto).execute()
 
     return {"produto_id": result.data[0]["id"]}
 
-# ==================================================
-# LISTAR PRODUTOS
-# ==================================================
-
 @app.get("/produtos")
-def listar_produtos(status: str = None):
-
+def listar_produtos(status: str = None, vendedor_id: int = None):
     query = supabase.table("produtos").select("*")
 
     if status:
         query = query.eq("status", status)
 
+    if vendedor_id:
+        query = query.eq("vendedor_id", vendedor_id)
+
     result = query.execute()
-
-    return {
-        "produtos": result.data,
-        "total": len(result.data)
-    }
-
-# ==================================================
-# APROVAR PRODUTO
-# ==================================================
+    return {"produtos": result.data}
 
 @app.put("/produtos/{produto_id}/aprovar")
 def aprovar_produto(produto_id: int):
-
     result = supabase.table("produtos").update({"status": "aprovado"}).eq("id", produto_id).execute()
 
     if not result.data:
@@ -248,7 +223,7 @@ def aprovar_produto(produto_id: int):
     return {"mensagem": "Produto aprovado"}
 
 # ==================================================
-# FAZER OFERTA
+# OFERTAS
 # ==================================================
 
 @app.post("/ofertas")
@@ -264,50 +239,94 @@ def fazer_oferta(oferta: OfertaCadastro, user_id: int = Depends(get_usuario_loga
     if produto["status"] != "aprovado":
         raise HTTPException(status_code=400, detail="Produto indisponível")
 
-    valor_oferta = oferta.valor
-    valor_pretendido = produto["valor_pretendido"]
-
-    if valor_oferta >= valor_pretendido:
+    if oferta.valor >= produto["valor_pretendido"]:
         supabase.table("produtos").update({"status": "vendido"}).eq("id", produto["id"]).execute()
-        status_oferta = "venda_automatica"
-        mensagem = "Venda automática!"
+        status = "venda_automatica"
+        mensagem = "Venda automática realizada!"
     else:
-        status_oferta = "pendente"
+        status = "pendente"
         mensagem = "Oferta enviada!"
 
-    nova = {
+    nova_oferta = {
         "produto_id": produto["id"],
         "comprador_id": user_id,
-        "valor": valor_oferta,
-        "status": status_oferta,
-        "condicional": valor_oferta < valor_pretendido,
-        "criado_em": datetime.utcnow().isoformat()
+        "valor": oferta.valor,
+        "status": status
     }
 
-    result = supabase.table("ofertas").insert(nova).execute()
+    result = supabase.table("ofertas").insert(nova_oferta).execute()
 
     return {
         "mensagem": mensagem,
-        "status": status_oferta,
         "oferta_id": result.data[0]["id"]
     }
 
-==================================================
-# LISTAR OFERTAS (ADICIONE AQUI)
-# ==================================================
-@app.get("/ofertas")
-def listar_ofertas(user_id: int = Depends(get_usuario_logado)):
-    result = supabase.table("ofertas").select("*").execute()
-    return {"ofertas": result.data}
+@app.get("/vendedor/{vendedor_id}/ofertas")
+def listar_ofertas_vendedor(vendedor_id: int):
 
+    produtos = supabase.table("produtos").select("*").eq("vendedor_id", vendedor_id).execute()
+
+    if not produtos.data:
+        return {"ofertas": []}
+
+    ids = [p["id"] for p in produtos.data]
+
+    ofertas = supabase.table("ofertas").select("*").in_("produto_id", ids).execute()
+
+    lista = []
+
+    for o in ofertas.data:
+        produto = next((p for p in produtos.data if p["id"] == o["produto_id"]), None)
+
+        comprador = supabase.table("usuarios").select("nome").eq("id", o["comprador_id"]).execute()
+
+        lista.append({
+            "oferta_id": o["id"],
+            "produto_nome": produto["nome"] if produto else "",
+            "produto_descricao": produto["descricao"] if produto else "",
+            "valor_ofertado": o["valor"],
+            "valor_pretendido": produto["valor_pretendido"] if produto else 0,
+            "status": o["status"],
+            "comprador_nome": comprador.data[0]["nome"] if comprador.data else "Desconhecido",
+            "criado_em": o.get("created_at")
+        })
+
+    return {"ofertas": lista}
+
+@app.put("/ofertas/{oferta_id}/responder")
+def responder_oferta(oferta_id: int, acao: str):
+
+    oferta = supabase.table("ofertas").select("*").eq("id", oferta_id).execute()
+
+    if not oferta.data:
+        raise HTTPException(status_code=404, detail="Oferta não encontrada")
+
+    oferta = oferta.data[0]
+
+    if oferta["status"] != "pendente":
+        raise HTTPException(status_code=400, detail="Oferta já processada")
+
+    if acao == "ACEITAÊ":
+        novo_status = "aceita"
+        supabase.table("produtos").update({"status": "vendido"}).eq("id", oferta["produto_id"]).execute()
+
+    elif acao == "RECUSAR":
+        novo_status = "recusada"
+
+    else:
+        raise HTTPException(status_code=400, detail="Ação inválida")
+
+    supabase.table("ofertas").update({"status": novo_status}).eq("id", oferta_id).execute()
+
+    return {"mensagem": f"Oferta {novo_status} com sucesso"}
 
 # ==================================================
-# HEALTH
+# ROOT
 # ==================================================
 
 @app.get("/")
 def root():
-    return {"msg": "ACEITAÊ rodando 🚀"}
+    return {"mensagem": "ACEITAÊ está no ar!"}
 
 @app.get("/health")
 def health():
