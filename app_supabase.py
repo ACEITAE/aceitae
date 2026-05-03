@@ -13,15 +13,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-class Usuario(BaseModel):
+# Modelo para CADASTRO (completo)
+class UsuarioCadastro(BaseModel):
     nome: str
     email: str
     telefone: str
     tipo: str
     senha: str
 
+# Modelo para LOGIN (apenas email e senha)
+class LoginRequest(BaseModel):
+    email: str
+    senha: str
+
 @app.post("/cadastrar")
-def cadastrar(user: Usuario):
+def cadastrar(user: UsuarioCadastro):
     existente = supabase.table("usuarios").select("*").eq("email", user.email).execute()
     if existente.data:
         raise HTTPException(400, "E-mail já cadastrado")
@@ -29,11 +35,20 @@ def cadastrar(user: Usuario):
     return {"mensagem": "Cadastro realizado"}
 
 @app.post("/login")
-def login(user: Usuario):
-    result = supabase.table("usuarios").select("*").eq("email", user.email).eq("senha", user.senha).execute()
-    if not result.data:
-        raise HTTPException(401, "Credenciais inválidas")
-    return {"mensagem": "Login ok", "nome": result.data[0]["nome"], "tipo": result.data[0]["tipo"]}
+def login(credenciais: LoginRequest):
+    resultado = supabase.table("usuarios").select("*").eq("email", credenciais.email).eq("senha", credenciais.senha).execute()
+    if not resultado.data:
+        raise HTTPException(401, "E-mail ou senha inválidos")
+    usuario = resultado.data[0]
+    return {
+        "usuario_id": usuario["id"],
+        "nome": usuario["nome"],
+        "tipo": usuario["tipo"]
+    }
+
+@app.get("/")
+def root():
+    return {"mensagem": "ACEITAÊ online"}
 
 @app.get("/health")
 def health():
