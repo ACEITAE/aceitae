@@ -124,7 +124,6 @@
             color: #00C853;
         }
 
-        /* Texto explicativo ao lado do logo */
         .logo-description {
             margin-left: 20px;
             padding-left: 20px;
@@ -148,7 +147,6 @@
             margin-top: 2px;
         }
 
-        /* Barra de busca */
         .search-box {
             flex: 1;
             max-width: 500px;
@@ -180,7 +178,6 @@
             background: #00A844;
         }
 
-        /* Botões de ação no header */
         .action-buttons {
             display: flex;
             gap: 16px;
@@ -222,14 +219,12 @@
             background: #00A844;
         }
 
-        /* Container principal */
         .container {
             max-width: 1280px;
             margin: 0 auto;
             padding: 24px;
         }
 
-        /* Filtros */
         .filters {
             background: white;
             border-radius: 12px;
@@ -269,7 +264,6 @@
             border-color: #00C853;
         }
 
-        /* Stats */
         .stats {
             display: flex;
             justify-content: space-between;
@@ -289,14 +283,12 @@
             color: #1A237E;
         }
 
-        /* Grid de produtos */
         .produtos-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 20px;
         }
 
-        /* Card profissional */
         .produto-card {
             background: white;
             border-radius: 12px;
@@ -312,13 +304,24 @@
         }
 
         .produto-imagem {
-            height: 220px;
+            height: 200px;
             background: #f9f9f9;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 56px;
             position: relative;
+            overflow: hidden;
+        }
+
+        .produto-imagem img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .produto-imagem i {
+            font-size: 48px;
+            color: #ccc;
         }
 
         .badge {
@@ -327,7 +330,7 @@
             left: 12px;
             background: #FFC107;
             color: #1A237E;
-            padding: 4px 8px;
+            padding: 4px 10px;
             border-radius: 6px;
             font-size: 11px;
             font-weight: bold;
@@ -340,11 +343,11 @@
         .produto-info h3 {
             font-size: 16px;
             font-weight: 600;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
             color: #333;
+            white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            white-space: nowrap;
         }
 
         .categoria {
@@ -373,14 +376,13 @@
             font-size: 13px;
             color: #666;
             line-height: 1.4;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
 
-        /* Área de oferta */
         .oferta-area {
             border-top: 1px solid #f0f0f0;
             padding-top: 12px;
@@ -421,11 +423,10 @@
             background: #00A844;
         }
 
-        /* Mensagem */
         .mensagem {
-            margin-top: 12px;
-            padding: 8px 12px;
-            border-radius: 8px;
+            margin-top: 10px;
+            padding: 8px;
+            border-radius: 6px;
             font-size: 12px;
             display: none;
         }
@@ -433,26 +434,21 @@
         .mensagem.sucesso {
             background: #e8f5e9;
             color: #2e7d32;
-        }
-
-        .mensagem.condicional {
-            background: #fff8e1;
-            color: #f57f17;
+            display: block;
         }
 
         .mensagem.erro {
             background: #ffebee;
             color: #c62828;
+            display: block;
         }
 
-        /* Loading */
         .loading {
             text-align: center;
             padding: 60px;
             color: #999;
         }
 
-        /* Footer */
         .footer {
             background: #1A237E;
             color: white;
@@ -518,8 +514,7 @@
                 align-items: flex-start;
             }
             .produtos-grid {
-                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-                gap: 12px;
+                grid-template-columns: 1fr;
             }
             .produto-imagem {
                 height: 160px;
@@ -534,7 +529,6 @@
     </style>
 </head>
 <body>
-    <!-- Top bar com links -->
     <div class="top-bar-links" id="topBar">
         <a href="vendedor.html"><i class="fas fa-store"></i> Central do Vendedor</a>
         <span class="separator">|</span>
@@ -558,7 +552,6 @@
         <a href="login.html" id="btnEntrar" class="btn-outline"><i class="fas fa-sign-in-alt"></i> Entrar</a>
     </div>
 
-    <!-- Header principal -->
     <div class="main-header">
         <div class="header-container">
             <div class="logo-area">
@@ -581,7 +574,7 @@
                 <a href="#"><i class="fas fa-heart"></i></a>
                 <a href="#"><i class="fas fa-shopping-cart"></i></a>
                 <a href="#" id="btn-ofertar" class="btn-outline"><i class="fas fa-gavel"></i> Ofertar</a>
-                <a href="cadastro.html?tipo=vendedor" id="btn-anunciar" class="btn-primary">
+                <a href="anunciar.html" id="btn-anunciar" class="btn-primary">
                     <i class="fas fa-plus-circle"></i> Anunciar Grátis
                 </a>
             </div>
@@ -589,7 +582,6 @@
     </div>
 
     <div class="container">
-        <!-- Filtros -->
         <div class="filters">
             <div class="filter-group">
                 <button class="filter-btn active" data-categoria="todos" onclick="filtrarPorCategoria('todos')">Todos</button>
@@ -597,23 +589,21 @@
                 <button class="filter-btn" data-categoria="Moda" onclick="filtrarPorCategoria('Moda')">Moda</button>
                 <button class="filter-btn" data-categoria="Casa" onclick="filtrarPorCategoria('Casa')">Casa</button>
                 <button class="filter-btn" data-categoria="Esporte" onclick="filtrarPorCategoria('Esporte')">Esporte</button>
+                <button class="filter-btn" data-categoria="Outros" onclick="filtrarPorCategoria('Outros')">Outros</button>
             </div>
         </div>
 
-        <!-- Stats -->
         <div class="stats">
             <div class="total-produtos">
                 <span id="total-produtos">0</span> produtos encontrados
             </div>
         </div>
 
-        <!-- Grid de produtos -->
         <div id="produtos" class="loading">
-            Carregando produtos...
+            <i class="fas fa-spinner fa-spin"></i> Carregando produtos...
         </div>
     </div>
 
-    <!-- Footer -->
     <div class="footer">
         <div class="footer-content">
             <div class="footer-section">
@@ -639,17 +629,12 @@
     </div>
 
     <script>
-        const API_URL = 'https://aceitae-api-v2.onrender.com';
+        const API_URL = 'https://aceitae33-api.onrender.com';
         
-        // ==================================================
-        // VERIFICACAO DE TIPO DE USUARIO (CORRIGIDA)
-        // ==================================================
         const usuarioTipo = localStorage.getItem('usuario_tipo');
         const usuarioNome = localStorage.getItem('usuario_nome');
         const usuarioId = localStorage.getItem('usuario_id');
         
-        // APENAS vendedores (sem ambos) sao redirecionados para o painel
-        // Usuarios do tipo "ambos" ficam na loja (podem acessar o painel pelo link)
         if (usuarioTipo === 'vendedor') {
             window.location.href = 'vendedor.html';
         }
@@ -702,7 +687,6 @@
             window.location.href = 'login.html';
         }
         
-        // Botao Ofertar - rola ate os produtos
         const btnOfertar = document.getElementById('btn-ofertar');
         if (btnOfertar) {
             btnOfertar.addEventListener('click', function(e) {
@@ -725,8 +709,8 @@
                     document.getElementById('produtos').innerHTML = `
                         <div style="text-align: center; padding: 60px;">
                             <i class="fas fa-gavel" style="font-size: 48px; color: #00C853;"></i>
-                            <p style="margin-top: 20px;">Nenhum produto disponivel no momento.</p>
-                            <p style="font-size: 14px; color: #999;">Faca uma oferta em breve!</p>
+                            <p style="margin-top: 20px;">Nenhum produto disponível no momento.</p>
+                            <p style="font-size: 14px; color: #999;">Volte em breve!</p>
                         </div>
                     `;
                     document.getElementById('total-produtos').textContent = '0';
@@ -741,7 +725,7 @@
                     <div style="text-align: center; padding: 60px;">
                         <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #f57f17;"></i>
                         <p style="margin-top: 20px;">❌ Erro ao carregar produtos.</p>
-                        <p style="font-size: 14px;">Verifique se o servidor esta rodando em ${API_URL}</p>
+                        <p style="font-size: 14px;">Verifique se o servidor está rodando em ${API_URL}</p>
                     </div>
                 `;
             }
@@ -785,10 +769,16 @@
             for (const produto of produtos) {
                 const card = document.createElement('div');
                 card.className = 'produto-card';
+                
+                const temFoto = produto.fotos && produto.fotos.length > 0;
+                const imagemHtml = temFoto 
+                    ? `<img src="${produto.fotos[0]}" alt="${produto.nome}">`
+                    : `<i class="fas fa-mobile-alt"></i>`;
+                
                 card.innerHTML = `
                     <div class="produto-imagem">
                         <div class="badge">Oferta</div>
-                        <i class="fas fa-mobile-alt" style="font-size: 48px; color: #999;"></i>
+                        ${imagemHtml}
                     </div>
                     <div class="produto-info">
                         <h3>${escapeHtml(produto.nome)}</h3>
@@ -850,7 +840,7 @@
 
         async function fazerOferta(produtoId) {
             if (!usuarioId) {
-                alert('Faca login para fazer uma oferta!');
+                alert('Faça login para fazer uma oferta!');
                 window.location.href = 'login.html';
                 return;
             }
@@ -860,7 +850,7 @@
             const msgDiv = document.getElementById(`msg-${produtoId}`);
 
             if (!valor || valor <= 0) {
-                mostrarMensagem(msgDiv, 'Digite um valor valido (maior que zero)!', 'erro');
+                mostrarMensagem(msgDiv, 'Digite um valor válido (maior que zero)!', 'erro');
                 return;
             }
 
@@ -889,7 +879,7 @@
                 }
             } catch (error) {
                 console.error('Erro:', error);
-                mostrarMensagem(msgDiv, '❌ Erro de conexao. Verifique o servidor.', 'erro');
+                mostrarMensagem(msgDiv, '❌ Erro de conexão. Verifique o servidor.', 'erro');
             }
 
             input.value = '';
@@ -905,7 +895,6 @@
             }, 5000);
         }
 
-        // Inicializar
         atualizarTopBar();
         carregarProdutos();
     </script>
